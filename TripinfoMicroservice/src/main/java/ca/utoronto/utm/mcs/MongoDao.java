@@ -77,10 +77,6 @@ public class MongoDao {
 		update.put("totalCost", totalCost);
 		update.put("driverPayout", driverPayout);
 
-		update.put("driver", "WORST DRIVER");
-
-		System.out.println(update.toString());
-
 		this.collection.updateOne(Filters.eq("_id", new ObjectId(tripId)), new Document("$set", update));
 	}
 
