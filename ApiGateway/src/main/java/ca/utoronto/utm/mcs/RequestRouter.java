@@ -3,8 +3,6 @@ package ca.utoronto.utm.mcs;
 import java.io.IOException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /** 
  * Everything you need in order to send and recieve httprequests to 
@@ -17,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
 import java.io.OutputStream;    // Also given to you to send back your response
+
 import java.util.function.Function;
 
 public class RequestRouter implements HttpHandler {
@@ -29,11 +28,11 @@ public class RequestRouter implements HttpHandler {
 
 	}
 
-	public void routeToService(HttpExchange r, String url, String method, JSONObject requestBody, OutputStream responseBody){
+	public void routeToService(HttpExchange r, String url, String method, String requestBody, OutputStream responseBody){
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
-				.method(method, HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+				.method(method, HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
 		client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
 				.thenApply(new Function<HttpResponse<String>, Object>() {
@@ -69,7 +68,7 @@ public class RequestRouter implements HttpHandler {
 		r.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		try {
 			String servicePath;
-			JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
+			String requestBody = Utils.convert(r.getRequestBody());
 			String service = path.substring(0, path.substring(1).indexOf("/") + 1);
 			System.out.println("service");
 			switch(service){
@@ -89,7 +88,7 @@ public class RequestRouter implements HttpHandler {
 					return;
 			}
 			routeToService(r, servicePath, method, requestBody, r.getResponseBody());
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			r.sendResponseHeaders(500, "INTERNAL SERVER ERROR".length());
 			r.getResponseBody().write("INTERNAL SERVER ERROR".getBytes());
