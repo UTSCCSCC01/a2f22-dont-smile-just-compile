@@ -65,4 +65,27 @@ public class PostgresDAO {
             this.st.execute(query);
         }
     }
+
+    // added methods
+    public boolean registerUser(String name, String email, String password) throws SQLException {
+        // TODO: do we need to generate our own uid? - Christine
+        String query = "SELECT * FROM %s WHERE email = '%s';";
+        query = String.format(query, "users", email);
+        if (this.st.executeQuery(query).next()){
+            return false;
+        }
+        query = "INSERT INTO %s(prefer_name, email, password, rides) VALUES ('%s', '%s', '%s', 0);";
+        query = String.format(query, "users", name, email, password);
+
+        System.out.println(query);
+        this.st.execute(query);
+        return true;
+    }
+
+    public ResultSet loginUser(String email, String password) throws SQLException {
+        // TODO: How do we log in a user???? - Christine
+        String query = "SELECT * FROM %s WHERE email = '%s' AND password = '%s';";
+        query = String.format(query, "users", email, password);
+        return this.st.executeQuery(query);
+    }
 }
