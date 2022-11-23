@@ -26,9 +26,8 @@ public class Driver extends Endpoint {
         System.out.println(driver);
         if (driver.length() > 0){
             JSONArray trips = new JSONArray();
-
+            // TODO: 404 status code - Christine
             JSONObject tripInfo;
-
             for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
                 tripInfo = new JSONObject();
                 String[] fields = new String[]{"_id", "distance", "totalCost", "discount", "startTime", "endTime", "timeElapsed", "passenger"};
