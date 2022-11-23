@@ -1,8 +1,14 @@
 package ca.utoronto.utm.mcs;
 
+import com.mongodb.client.FindIterable;
 import com.sun.net.httpserver.HttpExchange;
+import org.bson.Document;
+import org.json.JSONArray;
 import org.json.JSONException;
 import java.io.IOException;
+import java.util.Iterator;
+
+import org.json.JSONObject;
 
 public class Passenger extends Endpoint {
 
@@ -16,5 +22,31 @@ public class Passenger extends Endpoint {
     @Override
     public void handleGet(HttpExchange r) throws IOException,JSONException{
         // TODO
+        JSONObject response = new JSONObject();
+        int status;
+        String passenger = r.getRequestURI().toString().substring("/trip/passenger/".length());
+        System.out.println(passenger);
+        if (passenger.length() > 0){
+            JSONArray trips = new JSONArray();
+
+            JSONObject tripInfo;
+
+            for (Document trip : this.dao.getTripsByFilter("passenger", passenger)) {
+                tripInfo = new JSONObject();
+                String[] fields = new String[]{"_id", "distance", "driverPayout", "startTime", "endTime", "timeElapsed", "passenger"};
+                for (String key: fields){
+                    tripInfo.put(key, trip.get(key));
+                }
+                trips.put(tripInfo);
+            }
+            JSONObject data = new JSONObject();
+            data.put("trips", trips);
+            response.put("data", data);
+            status = 200;
+
+        } else {
+            status = 400;
+        }
+        sendResponse(r, response, status);
     }
 }
