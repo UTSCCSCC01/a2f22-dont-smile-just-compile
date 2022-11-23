@@ -30,7 +30,7 @@ public class Register extends Endpoint {
             try {
                 if (this.dao.registerUser(name, email, password)){
                     status = 200;
-                } else {
+                } else { // if email already has an account
                     status = 409;
                 }
 
