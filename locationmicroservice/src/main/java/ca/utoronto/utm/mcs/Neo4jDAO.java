@@ -21,6 +21,28 @@ public class Neo4jDAO {
 
     // *** implement database operations here *** //
 
+    public Result getNearbyDrivers(String uid, int radius) {
+        String query = "MATCH (n: user {uid: '%s'}), (other: user {is_driver: true}) " +
+                "WITH point({x: n.longitude, y: n.latitude}) AS a, point({x: other.longitude, y: other.latitude}) AS b, other " +
+                "WHERE point.distance(a,b) <= %d AND NOT other.uid = '%s' " +
+                "RETURN other.uid AS uid, other{.longitude, .latitude, .street} AS loc";
+        query = String.format(query, uid, radius, uid);
+        return this.session.run(query);
+    }
+
+    public Result getShortestRoute(String driverUid, String passengerUid) {
+        String query = "MATCH (driver: user {uid: '%s', is_driver: true}), (passenger: user {uid: '%s'}) " +
+                "CALL { WITH driver, passenger " +
+                "MATCH (s: road {name: driver.street}), (e: road {name: passenger.street}), (s)-[r:ROUTE_TO*]->(e) " +
+                "WITH min([i in r | i.travel_time]) AS times " +
+                "CALL { WITH times MATCH path = (s)-[r:ROUTE_TO*]->(e) WHERE [i in r | i.travel_time] = times RETURN path } " +
+                "UNWIND toIntegerList(times) as x WITH x, path, [i in RANGE(0, length(path)) | reduce(total = 0, j in RANGE(0, i-1) | times[j])] as t " +
+                "RETURN sum(x) as total, [i in RANGE(0, length(path)) | {street: nodes(path)[i].name, time: t[i], is_traffic: nodes(path)[i].has_traffic}] as route " +
+                "} RETURN {total_time: total, route: route} as data";
+        query = String.format(query, driverUid, passengerUid);
+        return this.session.run(query);
+    }
+
     public Result addUser(String uid, boolean is_driver) {
         String query = "CREATE (n: user {uid: '%s', is_driver: %b, longitude: 0, latitude: 0, street: ''}) RETURN n";
         query = String.format(query, uid, is_driver);
