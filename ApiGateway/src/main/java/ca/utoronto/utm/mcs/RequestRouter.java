@@ -29,6 +29,7 @@ public class RequestRouter implements HttpHandler {
 	}
 
 	public void routeToService(HttpExchange r, String url, String method, String requestBody, OutputStream responseBody){
+		System.out.println(url);
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
@@ -55,13 +56,14 @@ public class RequestRouter implements HttpHandler {
 	}
 
 	// TODO: IDK HOW TO FIND THESE FROM DOCKER OR WHATEVER - Christine
-	private static String locationMicroservicePath = "";
-	private static String userMicroservicePath = "";
-	private static String tripInfoMicroservicePath = "http://localhost:2001";
+	private static String locationMicroservicePath = "http://locationmicroservice:8000";
+	private static String userMicroservicePath = "http://usermicroservice:8000";
+	private static String tripInfoMicroservicePath = "http://tripinfomicroservice:8000";
 
 	@Override
 	public void handle(HttpExchange r) throws IOException {
         // TODO
+		System.out.println(r.getRequestURI());
 		String path = r.getRequestURI().getPath();
 		System.out.println(path);
 		String method = r.getRequestMethod();

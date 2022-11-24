@@ -22,6 +22,7 @@ public class Passenger extends Endpoint {
     @Override
     public void handleGet(HttpExchange r) throws IOException,JSONException{
         // TODO
+        System.out.println("GOT request for passenger");
         JSONObject response = new JSONObject();
         int status;
         String passenger = r.getRequestURI().toString().substring("/trip/passenger/".length());
@@ -41,12 +42,14 @@ public class Passenger extends Endpoint {
             }
             JSONObject data = new JSONObject();
             data.put("trips", trips);
+            System.out.println(data);
             response.put("data", data);
             status = 200;
 
         } else {
             status = 400;
         }
+        System.out.println("SENDING RESPONSE PASSENGER");
         sendResponse(r, response, status);
     }
 }
