@@ -30,11 +30,8 @@ public class Register extends Endpoint {
 
             try {
                 Integer uid;
-                if ((uid = this.dao.registerUser(name, email, password)) != null){
+                if (this.dao.registerUser(name, email, password)){
                     status = 200;
-                    JSONObject data = new JSONObject();
-                    data.put("uid", uid);
-                    responseBody.put("data", data);
                 } else { // if email already has an account
                     status = 409;
                 }
@@ -47,6 +44,6 @@ public class Register extends Endpoint {
         } else {
             status = 400;
         }
-        sendResponse(r, responseBody, status);
+        sendStatus(r, status);
     }
 }
