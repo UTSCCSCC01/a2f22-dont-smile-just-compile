@@ -20,6 +20,7 @@ public class Register extends Endpoint {
     public void handlePost(HttpExchange r) throws IOException, JSONException {
         // TODO
         JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
+        JSONObject responseBody = new JSONObject();
         int status;
         if (validateFields(requestBody, new String[]{"name", "email", "password"},
                 new Class[]{String.class, String.class, String.class})){
@@ -28,8 +29,12 @@ public class Register extends Endpoint {
             String password = requestBody.getString("password");
 
             try {
-                if (this.dao.registerUser(name, email, password)){
+                Integer uid;
+                if ((uid = this.dao.registerUser(name, email, password)) != null){
                     status = 200;
+                    JSONObject data = new JSONObject();
+                    data.put("uid", uid);
+                    responseBody.put("data", data);
                 } else { // if email already has an account
                     status = 409;
                 }
@@ -42,6 +47,6 @@ public class Register extends Endpoint {
         } else {
             status = 400;
         }
-        sendStatus(r, status);
+        sendResponse(r, responseBody, status);
     }
 }
