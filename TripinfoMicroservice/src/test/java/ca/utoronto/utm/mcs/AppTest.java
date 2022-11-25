@@ -57,7 +57,7 @@ public class AppTest {
         requestBody.put("startTime", 100);
         HttpResponse<String> response = sendRequest("/trip/confirm", "POST", requestBody.toString());
         JSONObject responseObject = new JSONObject(response.body());
-
+        System.out.println(responseObject);
         String tripId = responseObject.getString("data");
         return tripId;
     }
@@ -167,8 +167,8 @@ public class AppTest {
                 .put("is_driver", false);
         addUser(driver);
         addUser(passenger);
-        double locX = Math.random();
-        double locY = Math.random();
+        double locX = (int)(Math.floor(Math.random() * 10000000));
+        double locY = (int)(Math.floor(Math.random() * 10000000));
         JSONObject loc1 = new JSONObject()
                 .put("longitude", locX)
                 .put("latitude", locY)
@@ -260,12 +260,12 @@ public class AppTest {
         hasRoute(route4);
         hasRoute(route5);
         JSONObject loc1 = new JSONObject()
-                .put("longitude", Math.random())
-                .put("latitude", Math.random())
+                .put("longitude", (int)(Math.floor(Math.random() * 10000000)))
+                .put("latitude", (int)(Math.floor(Math.random() * 10000000)))
                 .put("street", "road1");
         JSONObject loc2 = new JSONObject()
-                .put("longitude", Math.random())
-                .put("latitude", Math.random())
+                .put("longitude", (int)(Math.floor(Math.random() * 10000000)))
+                .put("latitude", (int)(Math.floor(Math.random() * 10000000)))
                 .put("street", "road4");
         updateUserLocation(driverUid, loc1);
         updateUserLocation(passengerUid, loc2);
@@ -339,8 +339,21 @@ public class AppTest {
     public void patchTripPass() throws JSONException, IOException, InterruptedException {
         String tripId = setup();
         JSONObject requestBody = new JSONObject();
-        requestBody.put("driver", "121");
-        requestBody.put("distance", 234);
+        /* {
+            "distance": 23.4,
+            "endTime": 34,
+            "timeElapsed": "sdf",
+            "discount": 34.4,
+            "totalCost": 32432.0,
+            "driverPayout": 324.0
+        }*/
+        requestBody.put("distance", 234.4);
+        requestBody.put("endTime", 234);
+        requestBody.put("timeElapsed", "4:453");
+        requestBody.put("discount", 234.2);
+        requestBody.put("totalCost", 234.4);
+        requestBody.put("driverPayout", 234.5);
+
         HttpResponse<String> response = sendRequest("/trip/" + tripId, "PATCH", requestBody.toString());
         assertEquals( 200, response.statusCode());
     }
@@ -351,19 +364,19 @@ public class AppTest {
         requestBody.put("driver", "121");
         requestBody.put("distance", 234);
         HttpResponse<String> response = sendRequest("/trip/ihopethisdriveridisnottaken", "PATCH", requestBody.toString());
-        assertEquals(404, response.statusCode());
+        assertEquals(400, response.statusCode());
     }
 
     @Test
     public void tripsForPassengerPass() throws JSONException, IOException, InterruptedException {
-        String passengerId = String.valueOf(Math.random());
+        String passengerId = String.valueOf((int)(Math.floor(Math.random() * 10000000)));
         // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
         JSONArray trips = setupTripsForPassenger(passengerId);
 
         HttpResponse<String> response = sendRequest("/trip/passenger/" + passengerId, "GET", "");
         JSONObject responseBody = new JSONObject(response.body());
 
-        assertEquals( trips, responseBody.getJSONObject("data").getJSONArray("trips"));
+        assertEquals( trips.toString(), responseBody.getJSONObject("data").getJSONArray("trips").toString());
         System.out.println(trips);
         System.out.println(responseBody);
         assertEquals(200, response.statusCode());
@@ -371,7 +384,7 @@ public class AppTest {
 
     @Test
     public void tripsForPassengerFail() throws JSONException, IOException, InterruptedException {
-        String passengerId = Math.random() + "IHOPETHISPASSENGERDOESNTEXIST";
+        String passengerId = (int)(Math.floor(Math.random() * 10000000)) + "";
         // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
 
 
@@ -381,14 +394,17 @@ public class AppTest {
 
     @Test
     public void tripsForDriverPass() throws JSONException, IOException, InterruptedException {
-        String driverId = String.valueOf(Math.random());
+        String driverId = String.valueOf((int)(Math.floor(Math.random() * 10000000)));
         // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
         JSONArray trips = setupTripsForDriver(driverId);
 
         HttpResponse<String> response = sendRequest("/trip/driver/" + driverId, "GET", "");
         JSONObject responseBody = new JSONObject(response.body());
 
-        compareJson(trips.getJSONObject(0), responseBody.getJSONObject("data").getJSONArray("trips").getJSONObject(0));
+        //
+        // compareJson(trips.getJSONObject(0), responseBody.get("data").getJSONArray("trips").getJSONObject(0));
+        System.out.println(responseBody);
+        assertEquals(trips.toString(),responseBody.getJSONObject("data").getJSONArray("trips").toString());
         System.out.println(trips);
         System.out.println(responseBody);
         assertEquals( 200, response.statusCode());
@@ -396,7 +412,7 @@ public class AppTest {
 
     @Test
     public void tripsForDriverFail() throws JSONException, IOException, InterruptedException {
-        String driverId = Math.random() + "IHOPETHISDRIVERDOESNTEXIST";
+        String driverId = (int)(Math.floor(Math.random() * 10000000)) + "";
         // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
 
 

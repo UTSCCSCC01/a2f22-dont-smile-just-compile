@@ -30,6 +30,7 @@ public class Confirm extends Endpoint {
             String newId;
             if ((newId = this.dao.postTrip(driverUid, passengerUid, startTime)) != null){
                 status = 200;
+                System.out.println(newId);
                 response.put("data", newId);
             } else {
                 status = 500;
