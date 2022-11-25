@@ -37,15 +37,27 @@ public class Trip extends Endpoint {
          * }
          */
         String tripId = r.getRequestURI().toString().substring("/trip/".length());
+        boolean goAhead = true;
+        try {
+            ObjectId tripObjectId = new ObjectId(tripId);
+        } catch (Exception e){
+            status = 400;
+            goAhead = false;
+            sendStatus(r, 400);
+            return;
+        }
         if (this.dao.getTripByFilter("_id", new ObjectId(tripId)) != null){
             String[] bodyParams = new String[]{"distance", "endTime", "timeElapsed", "discount",
                     "totalCost", "driverPayout"};
-            if (validateFields(requestBody, bodyParams, new Class[]{Double.class, Integer.class, Integer.class,
-                    Double.class, Double.class, Double.class})){
+            if (validateFields(requestBody, bodyParams, new Class[]{Integer.class, Integer.class, String.class,
+                    Integer.class, Integer.class, Integer.class}) ||
+                    validateFields(requestBody, bodyParams, new Class[]{Double.class, Integer.class, String.class,
+                            Double.class, Double.class, Double.class})
+            ){
                 try {
                     Double distance = requestBody.getDouble("distance");
                     Integer endTime = requestBody.getInt("endTime");
-                    Integer timeElapsed = requestBody.getInt("timeElapsed");
+                    String timeElapsed = requestBody.getString("timeElapsed");
                     Double discount = requestBody.getDouble("discount");
                     Double totalCost = requestBody.getDouble("totalCost");
                     Double driverPayout = requestBody.getDouble("driverPayout");
@@ -64,6 +76,7 @@ public class Trip extends Endpoint {
         } else {
             status = 404;
         }
+
         sendResponse(r, response, status);
     }
 }
