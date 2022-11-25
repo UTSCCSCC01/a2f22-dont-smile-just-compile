@@ -167,8 +167,8 @@ public class AppTest {
                 .put("is_driver", false);
         addUser(driver);
         addUser(passenger);
-        double locX = (int)(Math.floor(Math.random() * 10000000));
-        double locY = (int)(Math.floor(Math.random() * 10000000));
+        double locX = 0.5;
+        double locY = 0.5;
         JSONObject loc1 = new JSONObject()
                 .put("longitude", locX)
                 .put("latitude", locY)
@@ -260,12 +260,12 @@ public class AppTest {
         hasRoute(route4);
         hasRoute(route5);
         JSONObject loc1 = new JSONObject()
-                .put("longitude", (int)(Math.floor(Math.random() * 10000000)))
-                .put("latitude", (int)(Math.floor(Math.random() * 10000000)))
+                .put("longitude",0.5)
+                .put("latitude", 0.5)
                 .put("street", "road1");
         JSONObject loc2 = new JSONObject()
-                .put("longitude", (int)(Math.floor(Math.random() * 10000000)))
-                .put("latitude", (int)(Math.floor(Math.random() * 10000000)))
+                .put("longitude", 1.5)
+                .put("latitude", 0.5)
                 .put("street", "road4");
         updateUserLocation(driverUid, loc1);
         updateUserLocation(passengerUid, loc2);
@@ -444,8 +444,8 @@ public class AppTest {
     public void driverTimeFail() throws IOException, InterruptedException, JSONException {
         String tripId = UUID.randomUUID().toString();
         HttpResponse<String> confirmRes = sendRequest("/trip/driverTime/" + tripId, "GET", "");
-        assertEquals(400, confirmRes.statusCode());
+        assertEquals(404, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
-        assertEquals("BAD REQUEST", response.get("status"));
+        assertEquals("NOT FOUND", response.get("status"));
     }
 }
