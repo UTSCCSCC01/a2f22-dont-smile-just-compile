@@ -3,6 +3,7 @@ package ca.utoronto.utm.mcs;
 import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONException;
 import java.io.IOException;
+import java.net.http.HttpResponse;
 
 import org.bson.Document;
 import org.json.JSONArray;
@@ -25,29 +26,47 @@ public class Driver extends Endpoint {
         String driver = r.getRequestURI().toString().substring("/trip/driver/".length());
         System.out.println(driver);
         if (driver.length() > 0){
-            JSONArray trips = new JSONArray();
-            // TODO: 404 status code - Christine
-            JSONObject tripInfo;
-            for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
-                tripInfo = new JSONObject();
-                String[] fieldsStr = new String[]{"_id", "passenger"};
-                String[] fieldsDoub = new String[]{"distance", "totalCost", "discount", "startTime", "endTime", "timeElapsed"};
-
-                for (String key: fieldsStr){
-                    tripInfo.put(key, trip.getString(key));
+            boolean goAhead;
+            try {
+                HttpResponse<String> res = sendRequest("/user/" + driver, "GET", "");
+                if (res.statusCode() != 200){
+                    goAhead = false;
+                } else {
+                    goAhead = true;
                 }
-                for (String key: fieldsDoub){
-                    tripInfo.put(key, trip.getDouble(key));
+
+                JSONArray trips = new JSONArray();
+                // TODO: 404 status code - Christine
+                JSONObject tripInfo;
+                for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
+                    tripInfo = new JSONObject();
+                    String[] fieldsStr = new String[]{"_id", "passenger", "timeElapsed"};
+                    String[] fieldsDoub = new String[]{"distance", "totalCost", "discount", "startTime", "endTime"};
+
+                    for (String key: fieldsStr){
+                        tripInfo.put(key, trip.get(key));
+                    }
+                    for (String key: fieldsDoub){
+                        if (trip.get(key) != null) {
+                            tripInfo.put(key, Double.parseDouble(trip.get(key).toString()));
+                        }
+                    }
+                    trips.put(tripInfo);
+
+
                 }
-                trips.put(tripInfo);
-
-
+                if (trips.length() == 0 && !goAhead){
+                    status = 404;
+                } else {
+                    JSONObject data = new JSONObject();
+                    data.put("trips", trips);
+                    response.put("data", data);
+                    status = 200;
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+                status = 500;
             }
-            JSONObject data = new JSONObject();
-            data.put("trips", trips);
-            response.put("data", data);
-            status = 200;
-
         } else {
             status = 400;
         }

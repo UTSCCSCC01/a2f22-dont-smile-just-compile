@@ -8,7 +8,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -17,6 +23,8 @@ public abstract class Endpoint implements HttpHandler {
     public MongoDao dao;
     public HashMap<Integer, String> errorMap;
     private static final String apiGatewayPath = "http://localhost:8004";
+
+    private static final String apiGatewayPath = "http://apigateway:8000";
 
     public Endpoint() {
         this.dao = new MongoDao();
@@ -86,6 +94,7 @@ public abstract class Endpoint implements HttpHandler {
         for (int i = 0; i < fields.length; i++) {
             try {
                 if (!JSONRequest.has(fields[i]) || !JSONRequest.get(fields[i]).getClass().equals(fieldClasses[i])) {
+                    System.out.println(fields[i] + "failed validation, its class is " +  JSONRequest.get(fields[i]).getClass());
                     return false;
                 }
             } catch (Exception e) {

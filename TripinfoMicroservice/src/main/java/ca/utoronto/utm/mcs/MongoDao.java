@@ -52,6 +52,7 @@ public class MongoDao {
 		doc.put("startTime", startTime);
 		try {
 			this.collection.insertOne(doc);
+			System.out.println(doc.get("_id"));
 			return doc.get("_id").toString();
 		} catch (Exception e) {
 			System.out.println("Error occurred");
@@ -67,7 +68,7 @@ public class MongoDao {
 		return this.collection.find(Filters.eq(key, value));
 	}
 
-	public void patchTrip(String tripId, double distance, int endTime, int timeElapsed, double discount, double totalCost,
+	public void patchTrip(String tripId, double distance, int endTime, String timeElapsed, double discount, double totalCost,
 							 double driverPayout){
 		Document update = new Document();
 		update.put("distance", distance);
