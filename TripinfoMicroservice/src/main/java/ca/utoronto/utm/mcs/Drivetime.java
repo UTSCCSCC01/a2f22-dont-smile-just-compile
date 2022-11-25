@@ -13,6 +13,7 @@ import java.net.URI;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,7 +42,7 @@ public class Drivetime extends Endpoint {
         try {
             System.out.println(r.getRequestURI());
             String tripId = params[3];
-            Document tripInfo = this.dao.getTripByFilter("_id", tripId);
+            Document tripInfo = this.dao.getTripByFilter("_id", new ObjectId(tripId));
 
             if (tripInfo != null) {
                 String driverUid = tripInfo.getString("driver");
