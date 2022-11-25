@@ -24,6 +24,10 @@ public class RequestRouter implements HttpHandler {
      * You may add and/or initialize attributes here if you 
      * need.
      */
+	private static final String locationMicroservicePath = "http://locationmicroservice:8000";
+	private static final String userMicroservicePath = "http://usermicroservice:8000";
+	private static final String tripInfoMicroservicePath = "http://tripinfomicroservice:8000";
+
 	public RequestRouter() {
 
 	}
@@ -55,17 +59,10 @@ public class RequestRouter implements HttpHandler {
 				});
 	}
 
-	// TODO: IDK HOW TO FIND THESE FROM DOCKER OR WHATEVER - Christine
-	private static String locationMicroservicePath = "http://locationmicroservice:8000";
-	private static String userMicroservicePath = "http://usermicroservice:8000";
-	private static String tripInfoMicroservicePath = "http://tripinfomicroservice:8000";
-
 	@Override
 	public void handle(HttpExchange r) throws IOException {
         // TODO
-		System.out.println(r.getRequestURI());
-		String path = r.getRequestURI().getPath();
-		System.out.println(path);
+		String path = r.getRequestURI().toString();
 		String method = r.getRequestMethod();
 		r.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		try {
