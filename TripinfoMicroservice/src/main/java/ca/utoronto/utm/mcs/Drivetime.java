@@ -12,7 +12,10 @@ import java.net.http.HttpResponse;
 import java.net.URI;
 
 import com.sun.net.httpserver.HttpExchange;
+import org.bson.Document;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class Drivetime extends Endpoint {
@@ -29,5 +32,43 @@ public class Drivetime extends Endpoint {
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
         // TODO
+        String[] params = r.getRequestURI().toString().split("/");
+        if (params.length != 4 || params[3].isEmpty()) {
+            this.sendStatus(r, 400);
+            return;
+        }
+
+        try {
+            System.out.println(r.getRequestURI());
+            String tripId = params[3];
+            Document tripInfo = this.dao.getTripByFilter("_id", tripId);
+
+            if (tripInfo != null) {
+                String driverUid = tripInfo.getString("driver");
+                String passengerUid = tripInfo.getString("passenger");
+
+                String endpoint = String.format("/location/navigation/%s?passengerUid=%s", driverUid, passengerUid);
+                HttpResponse<String> res = sendRequest(endpoint, "GET", "");
+                JSONObject resBody = new JSONObject(res.body());
+
+                if (res.statusCode() == 200) {
+                    JSONObject response = new JSONObject();
+                    JSONObject arrivalTime = new JSONObject();
+
+                    arrivalTime.put("arrival_time", resBody.getJSONObject("data").getInt("total_time"));
+
+                    response.put("data", arrivalTime);
+                    sendResponse(r, response, 200);
+                } else {
+                    sendStatus(r, res.statusCode());
+                }
+            } else {
+                System.out.println("bad id " + tripId);
+                sendStatus(r, 400);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.sendStatus(r, 500);
+        }
     }
 }

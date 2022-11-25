@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,7 @@ public abstract class Endpoint implements HttpHandler {
 
     public MongoDao dao;
     public HashMap<Integer, String> errorMap;
+    private static final String apiGatewayPath = "http://localhost:8004";
 
     private static final String apiGatewayPath = "http://apigateway:8000";
 
@@ -127,5 +129,4 @@ public abstract class Endpoint implements HttpHandler {
                 .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
 }
