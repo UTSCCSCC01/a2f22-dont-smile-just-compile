@@ -25,9 +25,9 @@ public class RequestRouter implements HttpHandler {
      * need.
      */
 
-	private static final String locationMicroservicePath = "http://localhost:8000";
-	private static final String userMicroservicePath = "http://localhost:8001";
-	private static final String tripInfoMicroservicePath = "http://localhost:8002";
+	private static final String locationMicroservicePath = "http://locationmicroservice:8000";
+	private static final String userMicroservicePath = "http://usermicroservice:8000";
+	private static final String tripInfoMicroservicePath = "http://tripinfomicroservice:8000";
 
 	public RequestRouter() {
 
