@@ -26,25 +26,13 @@ import org.json.JSONObject;
  
 public class AppTest {
 
-    private static final String GATEWAY_URL = "http://localhost:8004";
-    private static final String API_URL = "http://localhost:8002";
+    private static final String API_URL = "http://localhost:8004";
 
     private static HttpResponse<String> sendRequest(String endpoint, String method, String reqBody) throws IOException, InterruptedException {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL + endpoint))
-                .method(method, HttpRequest.BodyPublishers.ofString(reqBody))
-                .build();
-
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-
-    private static HttpResponse<String> sendRequestToGateway(String endpoint, String method, String reqBody) throws IOException, InterruptedException {
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(GATEWAY_URL + endpoint))
                 .method(method, HttpRequest.BodyPublishers.ofString(reqBody))
                 .build();
 
@@ -137,14 +125,14 @@ public class AppTest {
     }
 
     public void addUser(JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequestToGateway("/location/user", "PUT", reqBody.toString());
+        HttpResponse<String> confirmRes = sendRequest("/location/user", "PUT", reqBody.toString());
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));
     }
 
     public void updateUserLocation(String uid, JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequestToGateway("/location/" + uid, "PATCH", reqBody.toString());
+        HttpResponse<String> confirmRes = sendRequest("/location/" + uid, "PATCH", reqBody.toString());
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));
@@ -199,14 +187,14 @@ public class AppTest {
     }
 
     public void addRoad(JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequestToGateway("/location/road", "PUT", reqBody.toString());
+        HttpResponse<String> confirmRes = sendRequest("/location/road", "PUT", reqBody.toString());
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));
     }
 
     public void hasRoute(JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequestToGateway("/location/hasRoute", "POST", reqBody.toString());
+        HttpResponse<String> confirmRes = sendRequest("/location/hasRoute", "POST", reqBody.toString());
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));

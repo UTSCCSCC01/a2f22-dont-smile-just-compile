@@ -21,7 +21,7 @@ import java.util.*;
  
 public class AppTest {
 
-    private static final String API_URL = "http://localhost:8000";
+    private static final String API_URL = "http://localhost:8004";
 
     private static HttpResponse<String> sendRequest(String endpoint, String method, String reqBody) throws InterruptedException, IOException {
 
