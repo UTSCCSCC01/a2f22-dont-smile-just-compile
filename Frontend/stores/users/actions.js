@@ -14,9 +14,10 @@ export const login = createAsyncThunk(
     try {
       const {data} = await loginUser(email,password);
       if (data.uid == undefined){
+        console.log(data);
         throw new Error("uid not returned");
       }
-
+      console.log("USER HAS LOGIN CREDENTIALS!");
       //Fetch data
       const { data: {data: {rides, isDriver}} } = await getUserInformation(data.uid);
 
@@ -31,6 +32,7 @@ export const login = createAsyncThunk(
       return true;
     } catch (e) {
       dispatch(displayErrorToast("Error has occured", "Login unsuccessful."));
+      console.log(e);
       return rejectWithValue({
         status: e.response && e.response.status,
         message: e.response && e.response.data,
@@ -65,6 +67,7 @@ export const signup = createAsyncThunk(
       dispatch(displaySuccessToast("Signup successful", `Happy Zooming! User ${data.uid}`));
       return true;
     } catch (e) {
+       console.log(e);
       dispatch(displayErrorToast("Error has occured", "Signup unsuccessful."));
       return rejectWithValue({
         status: e.response && e.response.status,
@@ -93,6 +96,7 @@ export const patchUser = createAsyncThunk(
       dispatch(displaySuccessToast("Change successful", ""));
       return true;
     } catch (e) {
+      console.log(e);
       dispatch(displayErrorToast("Error has occured", "Signup unsuccessful."));
       return rejectWithValue({
         status: e.response && e.response.status,

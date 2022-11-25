@@ -60,6 +60,7 @@ public abstract class Endpoint implements HttpHandler {
         OutputStream os = r.getResponseBody();
         os.write(response.getBytes());
         os.close();
+        System.out.println("Called " + r.getRequestURI() + " and return " + response);
     }
 
     public void sendResponse(HttpExchange r, JSONObject obj, int statusCode) throws JSONException, IOException {

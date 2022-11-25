@@ -31,11 +31,14 @@ public class Login extends Endpoint {
             String password = requestBody.getString("password");
 
             try {
+                ResultSet result;
                 // TODO: 401 status code??? - Christine
                 if (!this.dao.matchUser(email, null,null,null,null).next()){
                     status = 404;
-                } else if ((this.dao.loginUser(email, password)).next()){
+                } else if ((result = this.dao.loginUser(email, password)).next()){
                     status = 200;
+                    JSONObject data = new JSONObject();
+                    response.put("uid", result.getInt("uid"));
                 } else { // email exists, but password doesnt match
                     status = 401;
                 }

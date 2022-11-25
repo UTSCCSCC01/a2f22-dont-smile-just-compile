@@ -73,6 +73,7 @@ public class AppTest {
 
     @Test
     public void getNearbyDriverPass() throws JSONException, IOException, InterruptedException {
+        double rand = Math.random();
         String uid1 = UUID.randomUUID().toString();
         String uid2 = UUID.randomUUID().toString();
         JSONObject user1 = new JSONObject()
@@ -84,12 +85,12 @@ public class AppTest {
         addUser(user1);
         addUser(user2);
         JSONObject loc1 = new JSONObject()
-                .put("longitude", 21.5)
-                .put("latitude", 20.5)
+                .put("longitude", 21.5 + rand)
+                .put("latitude", 20.5 + rand)
                 .put("street", "cool street");
         JSONObject loc2 = new JSONObject()
-                .put("longitude", 20.5)
-                .put("latitude", 20.5)
+                .put("longitude", 20.5 + rand)
+                .put("latitude", 20.5 + rand)
                 .put("street", "cool street");
         updateUserLocation(uid1, loc1);
         updateUserLocation(uid2, loc2);
@@ -113,6 +114,8 @@ public class AppTest {
 
     @Test
     public void getNearbyDriverFail() throws JSONException, IOException, InterruptedException {
+        double rand = Math.random();
+
         String uid1 = UUID.randomUUID().toString();
         String uid2 = UUID.randomUUID().toString();
         HttpResponse<String> confirmRes = sendRequest("/location/nearbyDriver/" + uid1 + "?radius=1", "GET", "");
@@ -132,12 +135,12 @@ public class AppTest {
         assertEquals("NOT FOUND", response.get("status"));
         addUser(user2);
         JSONObject loc1 = new JSONObject()
-                .put("longitude", 1.5)
-                .put("latitude", 0.5)
+                .put("longitude", 1.5 + rand)
+                .put("latitude", 0.5 + rand)
                 .put("street", "cool street");
         JSONObject loc2 = new JSONObject()
-                .put("longitude", 0.5)
-                .put("latitude", 0.5)
+                .put("longitude", 0.5 + rand)
+                .put("latitude", 0.5 + rand)
                 .put("street", "cool street");
         updateUserLocation(uid1, loc1);
         updateUserLocation(uid2, loc2);
@@ -157,6 +160,7 @@ public class AppTest {
 
     @Test
     public void getNavigationPass() throws JSONException, IOException, InterruptedException {
+        double rand = Math.random();
         String driverUid = UUID.randomUUID().toString();
         String passengerUid = UUID.randomUUID().toString();
         JSONObject driver = new JSONObject()
@@ -218,12 +222,12 @@ public class AppTest {
         hasRoute(route4);
         hasRoute(route5);
         JSONObject loc1 = new JSONObject()
-                .put("longitude", 1.5)
-                .put("latitude", 0.5)
+                .put("longitude", 1.5 + rand)
+                .put("latitude", 0.5 + rand)
                 .put("street", "road1");
         JSONObject loc2 = new JSONObject()
-                .put("longitude", 0.5)
-                .put("latitude", 0.5)
+                .put("longitude", 0.5 + rand)
+                .put("latitude", 0.5 + rand)
                 .put("street", "road4");
         updateUserLocation(driverUid, loc1);
         updateUserLocation(passengerUid, loc2);
@@ -260,6 +264,7 @@ public class AppTest {
 
     @Test
     public void getNavigationFail() throws JSONException, IOException, InterruptedException {
+        double rand = Math.random();
         String driverUid = UUID.randomUUID().toString();
         String passengerUid = UUID.randomUUID().toString();
         JSONObject driver = new JSONObject()
@@ -297,12 +302,12 @@ public class AppTest {
         assertEquals("NOT FOUND", response.get("status"));
         hasRoute(route1);
         JSONObject loc1 = new JSONObject()
-                .put("longitude", 1.5)
-                .put("latitude", 0.5)
+                .put("longitude", 1.5 + rand)
+                .put("latitude", 0.5 + rand)
                 .put("street", "road5");
         JSONObject loc2 = new JSONObject()
-                .put("longitude", 0.5)
-                .put("latitude", 0.5)
+                .put("longitude", 0.5 + rand)
+                .put("latitude", 0.5 + rand)
                 .put("street", "road6");
         confirmRes = sendRequest("/location/navigation/" + driverUid + "?passengerUid=" + passengerUid, "GET", "");
         assertEquals(HttpURLConnection.HTTP_NOT_FOUND, confirmRes.statusCode());

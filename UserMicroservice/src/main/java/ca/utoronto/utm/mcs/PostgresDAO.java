@@ -76,18 +76,19 @@ public class PostgresDAO {
      * @return true if user successfully registered, false if email already has an account
      * @throws SQLException
      */
-    public boolean registerUser(String name, String email, String password) throws SQLException {
+    public Integer registerUser(String name, String email, String password) throws SQLException {
         // TODO: do we need to generate our own uid? - Christine
 
         if (this.matchUser(email, null, null, null, null).next()){
-            return false;
+            return null;
         }
         String query = "INSERT INTO %s(prefer_name, email, password, rides) VALUES ('%s', '%s', '%s', 0);";
         query = String.format(query, "users", name, email, password);
 
         System.out.println(query);
         this.st.execute(query);
-        return true;
+        ResultSet result = this.matchUser(email, null, null, null, null);
+        return result.getInt("uid");
     }
 
     /**
