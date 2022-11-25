@@ -29,13 +29,11 @@ public class AppTest {
     private static final String API_URL = "http://localhost:8004";
 
     private static HttpResponse<String> sendRequest(String endpoint, String method, String reqBody) throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL + endpoint))
                 .method(method, HttpRequest.BodyPublishers.ofString(reqBody))
                 .build();
-
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
@@ -48,6 +46,7 @@ public class AppTest {
                 .build();
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
+
     }
 
     public String setup() throws JSONException, IOException, InterruptedException {
@@ -271,7 +270,6 @@ public class AppTest {
         updateUserLocation(passengerUid, loc2);
     }
 
-    @Test
     public void tripRequestPass() throws JSONException, IOException, InterruptedException {
         String uid1 = UUID.randomUUID().toString();
         String uid2 = UUID.randomUUID().toString();
@@ -404,7 +402,6 @@ public class AppTest {
         assertEquals( 404, response.statusCode());
     }
 
-    @Test
     public void driverTimePass() throws JSONException, IOException, InterruptedException {
         String driverUid = UUID.randomUUID().toString();
         String passengerUid = UUID.randomUUID().toString();
@@ -424,7 +421,6 @@ public class AppTest {
         assertEquals(6, data.getInt("arrival_time"));
     }
 
-    @Test
     public void driverTimeFail() throws IOException, InterruptedException, JSONException {
         String tripId = UUID.randomUUID().toString();
         HttpResponse<String> confirmRes = sendRequest("/trip/driverTime/" + tripId, "GET", "");
