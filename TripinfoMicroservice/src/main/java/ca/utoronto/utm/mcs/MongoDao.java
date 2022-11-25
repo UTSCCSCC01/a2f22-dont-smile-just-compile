@@ -79,5 +79,4 @@ public class MongoDao {
 
 		this.collection.updateOne(Filters.eq("_id", new ObjectId(tripId)), new Document("$set", update));
 	}
-
 }

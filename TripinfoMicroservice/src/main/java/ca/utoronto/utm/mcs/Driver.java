@@ -34,10 +34,12 @@ public class Driver extends Endpoint {
                 String[] fieldsDoub = new String[]{"distance", "totalCost", "discount", "startTime", "endTime", "timeElapsed"};
 
                 for (String key: fieldsStr){
-                    tripInfo.put(key, trip.getString(key));
+                    tripInfo.put(key, trip.get(key).toString());
                 }
                 for (String key: fieldsDoub){
-                    tripInfo.put(key, trip.getDouble(key));
+                    if (trip.get(key) != null) {
+                        tripInfo.put(key, Double.parseDouble(trip.get(key).toString()));
+                    }
                 }
                 trips.put(tripInfo);
 

@@ -37,7 +37,7 @@ public class Trip extends Endpoint {
          * }
          */
         String tripId = r.getRequestURI().toString().substring("/trip/".length());
-        if (this.dao.getTripByFilter("_id", new ObjectId(tripId)) != null){
+        if (this.dao.getTripByFilter("_id", tripId) != null){
             String[] bodyParams = new String[]{"distance", "endTime", "timeElapsed", "discount",
                     "totalCost", "driverPayout"};
             if (validateFields(requestBody, bodyParams, new Class[]{Double.class, Integer.class, Integer.class,

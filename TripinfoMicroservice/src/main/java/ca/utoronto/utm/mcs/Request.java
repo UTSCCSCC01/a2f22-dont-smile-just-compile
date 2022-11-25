@@ -39,50 +39,34 @@ public class Request extends Endpoint {
     @Override
     public void handlePost(HttpExchange r) throws IOException,JSONException{
         // TODO
-
-        System.out.println("HANDLING POST");
-        System.out.println(r.getRequestURI());
-
-
         JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
         JSONObject response = new JSONObject();
 
-        int status;
         if (this.validateFields(requestBody, new String[]{"uid", "radius"}, new Class[]{String.class, Integer.class})){
             String uid = requestBody.getString("uid");
             Integer radius = requestBody.getInt("radius");
-            status = 200;
-            // TODO: Fix everything below - Christine
-            String driverRequest = String.format("http://localhost:8000/location/nearbyDriver/%s?radius=%d", uid, radius);
-            // GET /location/nearbyDriver.:uid?radius=
-            HttpClient client = HttpClient.newBuilder().build();
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(driverRequest)).build();
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(new Function<HttpResponse<String>, Object>() {
-                        @Override
-                        public Object apply(HttpResponse<String> stringHttpResponse) {
-                            try {
-                                System.out.println(stringHttpResponse.body());
-                                JSONObject body = new JSONObject(stringHttpResponse.body());
-                                JSONObject bodyData = body.getJSONObject("data");
-                                List<String> driverUids = new ArrayList<String>();
-                                Iterator<?> iterator = bodyData.keys();
-                                while(iterator.hasNext()){
-                                    driverUids.add(iterator.next().toString());
-                                }
-                                response.put("data", driverUids);
-                                sendResponse(r, response, 200);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        }
-                    });
+
+            String endpoint = String.format("/location/nearbyDriver/%s?radius=%d", uid, radius);
+            try {
+                HttpResponse<String> res = sendRequest(endpoint, "GET", "");
+                JSONObject resBody = new JSONObject(res.body());
+                if (res.statusCode() == 200) {
+                    JSONObject bodyData = resBody.getJSONObject("data");
+                    List<String> driverUids = new ArrayList<String>();
+                    Iterator<?> iterator = bodyData.keys();
+                    while(iterator.hasNext()){
+                        driverUids.add(iterator.next().toString());
+                    }
+                    response.put("data", driverUids);
+                    sendResponse(r, response, 200);
+                } else {
+                    sendStatus(r, res.statusCode());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
-            status = 400;
-            this.sendResponse(r, response, status);
+            sendStatus(r, 400);
         }
 
     }

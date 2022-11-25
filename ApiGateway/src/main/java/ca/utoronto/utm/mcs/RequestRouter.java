@@ -24,6 +24,11 @@ public class RequestRouter implements HttpHandler {
      * You may add and/or initialize attributes here if you 
      * need.
      */
+
+	private static final String locationMicroservicePath = "http://localhost:8000";
+	private static final String userMicroservicePath = "http://localhost:8001";
+	private static final String tripInfoMicroservicePath = "http://localhost:8002";
+
 	public RequestRouter() {
 
 	}
@@ -55,16 +60,10 @@ public class RequestRouter implements HttpHandler {
 				});
 	}
 
-	// TODO: IDK HOW TO FIND THESE FROM DOCKER OR WHATEVER - Christine
-	private static String locationMicroservicePath = "http://locationmicroservice:8000";
-	private static String userMicroservicePath = "http://usermicroservice:8000";
-	private static String tripInfoMicroservicePath = "http://tripinfomicroservice:8000";
-
 	@Override
 	public void handle(HttpExchange r) throws IOException {
         // TODO
-		System.out.println(r.getRequestURI());
-		String path = r.getRequestURI().getPath();
+		String path = r.getRequestURI().toString();
 		System.out.println(path);
 		String method = r.getRequestMethod();
 		r.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -72,7 +71,7 @@ public class RequestRouter implements HttpHandler {
 			String servicePath;
 			String requestBody = Utils.convert(r.getRequestBody());
 			String service = path.substring(0, path.substring(1).indexOf("/") + 1);
-			System.out.println("service");
+			System.out.println("service: " + service);
 			switch(service){
 				case "/trip":
 					servicePath = tripInfoMicroservicePath + path;
@@ -95,7 +94,6 @@ public class RequestRouter implements HttpHandler {
 			r.sendResponseHeaders(500, "INTERNAL SERVER ERROR".length());
 			r.getResponseBody().write("INTERNAL SERVER ERROR".getBytes());
 			r.getResponseBody().close();
-
 		}
 	}
 }

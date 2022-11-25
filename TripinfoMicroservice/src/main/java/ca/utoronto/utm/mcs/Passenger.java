@@ -37,10 +37,10 @@ public class Passenger extends Endpoint {
                 String[] fieldsStr = new String[]{"_id", "passenger"};
                 String[] fieldsDoub = new String[]{ "distance", "driverPayout", "startTime", "endTime", "timeElapsed"};
                 for (String key: fieldsStr){
-                    tripInfo.put(key, trip.getString(key));
+                    tripInfo.put(key, trip.get(key));
                 }
                 for (String key: fieldsDoub){
-                    tripInfo.put(key, trip.getDouble(key));
+                    tripInfo.put(key, trip.get(key));
                 }
                 trips.put(tripInfo);
             }
