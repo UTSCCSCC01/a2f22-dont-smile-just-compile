@@ -88,6 +88,7 @@ public class PostgresDAO {
         System.out.println(query);
         this.st.execute(query);
         ResultSet result = this.matchUser(email, null, null, null, null);
+        result.next();
         return result.getInt("uid");
     }
 

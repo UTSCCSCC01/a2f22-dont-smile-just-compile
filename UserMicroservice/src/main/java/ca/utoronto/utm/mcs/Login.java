@@ -38,7 +38,7 @@ public class Login extends Endpoint {
                 } else if ((result = this.dao.loginUser(email, password)).next()){
                     status = 200;
                     JSONObject data = new JSONObject();
-                    response.put("uid", result.getInt("uid"));
+                    response.put("uid", String.valueOf(result.getInt("uid")));
                 } else { // email exists, but password doesnt match
                     status = 401;
                 }

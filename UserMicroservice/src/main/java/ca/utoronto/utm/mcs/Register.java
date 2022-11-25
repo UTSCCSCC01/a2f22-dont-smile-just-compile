@@ -34,7 +34,7 @@ public class Register extends Endpoint {
                 if ((uid = this.dao.registerUser(name, email, password)) != null){
                     status = 200;
                     JSONObject data = new JSONObject();
-                    response.put("uid", uid);
+                    response.put("uid", String.valueOf(uid));
                 } else { // if email already has an account
                     status = 409;
                 }
