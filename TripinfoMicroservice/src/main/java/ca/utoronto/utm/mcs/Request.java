@@ -15,6 +15,16 @@ import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONException;
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+
+import org.json.JSONObject;
+import com.mongodb.client.FindIterable;
+import org.bson.Document;
+
 public class Request extends Endpoint {
 
     /**
@@ -29,5 +39,34 @@ public class Request extends Endpoint {
     @Override
     public void handlePost(HttpExchange r) throws IOException,JSONException{
         // TODO
+        JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
+        JSONObject response = new JSONObject();
+
+        if (this.validateFields(requestBody, new String[]{"uid", "radius"}, new Class[]{String.class, Integer.class})){
+            String uid = requestBody.getString("uid");
+            Integer radius = requestBody.getInt("radius");
+            String endpoint = String.format("/location/nearbyDriver/%s?radius=%d", uid, radius);
+            try {
+                HttpResponse<String> res = sendRequest(endpoint, "GET", "");
+                JSONObject resBody = new JSONObject(res.body());
+                if (res.statusCode() == 200) {
+                    JSONObject bodyData = resBody.getJSONObject("data");
+                    List<String> driverUids = new ArrayList<String>();
+                    Iterator<?> iterator = bodyData.keys();
+                    while(iterator.hasNext()){
+                        driverUids.add(iterator.next().toString());
+                    }
+                    response.put("data", driverUids);
+                    sendResponse(r, response, 200);
+                } else {
+                    sendStatus(r, res.statusCode());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sendStatus(r, 400);
+        }
+
     }
 }
