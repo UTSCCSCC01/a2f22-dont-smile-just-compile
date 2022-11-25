@@ -20,7 +20,6 @@ public class Register extends Endpoint {
     public void handlePost(HttpExchange r) throws IOException, JSONException {
         // TODO
         JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
-        JSONObject responseBody = new JSONObject();
         int status;
         if (validateFields(requestBody, new String[]{"name", "email", "password"},
                 new Class[]{String.class, String.class, String.class})){

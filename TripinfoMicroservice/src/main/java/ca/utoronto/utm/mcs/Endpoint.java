@@ -22,6 +22,7 @@ public abstract class Endpoint implements HttpHandler {
 
     public MongoDao dao;
     public HashMap<Integer, String> errorMap;
+
     private static final String apiGatewayPath = "http://apigateway:8000";
 
     public Endpoint() {
