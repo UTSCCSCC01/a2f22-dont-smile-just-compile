@@ -31,7 +31,9 @@ public class Confirm extends Endpoint {
             if ((newId = this.dao.postTrip(driverUid, passengerUid, startTime)) != null){
                 status = 200;
                 System.out.println(newId);
-                response.put("data", newId);
+                JSONObject data = new JSONObject();
+                data.put("_id", newId );
+                response.put("data", data);
             } else {
                 status = 500;
             }
