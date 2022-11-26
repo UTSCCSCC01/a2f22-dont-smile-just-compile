@@ -3,6 +3,8 @@ package ca.utoronto.utm.mcs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import com.mongodb.util.JSON;
 import org.json.JSONArray;
@@ -20,11 +22,19 @@ import java.util.Iterator;
 import java.util.UUID;
 import org.json.JSONObject;
 
+
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 /**
  * Please write your tests in this class. 
  */
  
 public class AppTest {
+
+    @Mock
+    HttpClient mockClient;
+
 
     private static final String API_URL = "http://localhost:8004";
 
@@ -39,15 +49,9 @@ public class AppTest {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private static HttpResponse<String> sendRequestAsync(String endpoint, String method, String reqBody) throws IOException, InterruptedException {
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL + endpoint))
-                .method(method, HttpRequest.BodyPublishers.ofString(reqBody))
-                .build();
-
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    private void setupMockApi(HttpResponse<String> response) throws IOException, InterruptedException {
+        MockitoAnnotations.initMocks(this);
+        when(mockClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(response);
     }
 
     public String setup() throws JSONException, IOException, InterruptedException {
