@@ -4,21 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.util.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.UUID;
 import org.json.JSONObject;
 
@@ -26,10 +30,12 @@ import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.net.ssl.SSLSession;
+
 /**
  * Please write your tests in this class. 
  */
- 
+
 public class AppTest {
 
     @Mock
@@ -48,6 +54,7 @@ public class AppTest {
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
 
     private void setupMockApi(HttpResponse<String> response) throws IOException, InterruptedException {
         MockitoAnnotations.initMocks(this);
@@ -279,8 +286,66 @@ public class AppTest {
     public void tripRequestPass() throws JSONException, IOException, InterruptedException {
         String uid1 = UUID.randomUUID().toString();
         String uid2 = UUID.randomUUID().toString();
-        String reqBody = setupTripRequest(uid1, uid2);
-        HttpResponse<String> confirmRes = sendRequest("/trip/request/", "POST", reqBody);
+        //String reqBody = setupTripRequest(uid1, uid2);
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create(API_URL + "/location/nearbyDriver/" + uid2 + "?radius=30"))
+//                .method("GET", HttpRequest.BodyPublishers.ofString(""))
+//                .build();
+        JSONObject loc = new JSONObject()
+                .put("longitude", 56.235)
+                .put("latitude", 70.368)
+                .put("street", "Mississauga Rd.");
+        JSONObject resData = new JSONObject()
+                .put(uid1, loc);
+        JSONObject resBody = new JSONObject()
+                .put("status", 200)
+                .put("data", resData);
+        HttpResponse<String> mockResponse = new HttpResponse<String>() {
+            @Override
+            public int statusCode() {
+                return 200;
+            }
+
+            @Override
+            public HttpRequest request() {
+                return null;
+            }
+
+            @Override
+            public Optional<HttpResponse<String>> previousResponse() {
+                return Optional.empty();
+            }
+
+            @Override
+            public HttpHeaders headers() {
+                return null;
+            }
+
+            @Override
+            public String body() {
+                return resBody.toString();
+            }
+
+            @Override
+            public Optional<SSLSession> sslSession() {
+                return Optional.empty();
+            }
+
+            @Override
+            public URI uri() {
+                return null;
+            }
+
+            @Override
+            public HttpClient.Version version() {
+                return null;
+            }
+        };
+        setupMockApi(mockResponse);
+        JSONObject reqBody = new JSONObject()
+                .put("uid", uid2)
+                .put("radius", 30);
+        HttpResponse<String> confirmRes = sendRequest("/trip/request/", "POST", reqBody.toString());
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));
