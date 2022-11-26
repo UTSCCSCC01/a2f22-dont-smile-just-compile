@@ -22,35 +22,28 @@ public class Navigation extends Endpoint {
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
         String[] params = r.getRequestURI().toString().split("/");
-        if (params.length != 4 || params[3].isEmpty() || !params[3].matches(".+\\?passengerUid=.+")) {
-            this.sendStatus(r, HttpURLConnection.HTTP_BAD_REQUEST);
-            return;
-        }
-
-        String[] uids = params[3].split("\\?passengerUid=");
-        if (uids.length != 2) {
-            this.sendStatus(r, HttpURLConnection.HTTP_BAD_REQUEST);
+        if (params.length != 4 || params[3].isEmpty() || !params[3].matches("\\d+\\?passengerUid=\\d+")) {
+            this.sendStatus(r, 400);
             return;
         }
 
         try {
-            JSONObject res = new JSONObject();
-            Result result = this.dao.getShortestRoute(uids[0], uids[1]);
-            int status;
+            String[] driverPassenger = params[3].split("\\?passengerUid=");
+            Result result = this.dao.getShortestRoute(driverPassenger[0], driverPassenger[1]);
 
             if (result.hasNext()) {
+                JSONObject res = new JSONObject();
                 Record user = result.next();
                 Map<String, Object> data = user.get("data").asMap();
                 res.put("data", data);
-                status = HttpURLConnection.HTTP_OK;
+                this.sendResponse(r, res, 200);
             } else {
-                status = HttpURLConnection.HTTP_NOT_FOUND;
+                this.sendStatus(r, 404);
             }
-            res.put("status", status);
-            this.sendResponse(r, res, status);
+
         } catch (Exception e) {
             e.printStackTrace();
-            this.sendStatus(r, HttpURLConnection.HTTP_INTERNAL_ERROR);
+            this.sendStatus(r, 500);
         }
     }
 }
