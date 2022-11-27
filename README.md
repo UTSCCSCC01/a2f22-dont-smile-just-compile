@@ -8,6 +8,8 @@ The LocationMicroservice tests must be run before the TripMicroservice tests are
 
 - driverTimePass() requires getNavigationPass() from the location app tests
 
+- tripConfirmPass() requires getNavigationPass() from the location app tests
+
 The tests for TripMicroservice require LocationMicroservice and UserMicroservice to be running in docker.
 
 The endpoints for UserMicroservice assume that Login/Register do **NOT** return the uid
