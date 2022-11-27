@@ -21,55 +21,59 @@ public class Driver extends Endpoint {
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
         // TODO
-        JSONObject response = new JSONObject();
-        int status;
-        String driver = r.getRequestURI().toString().substring("/trip/driver/".length());
-        System.out.println(driver);
-        if (driver.length() > 0){
-            boolean goAhead;
-            try {
-                HttpResponse<String> res = sendRequest("/user/" + driver, "GET", "");
-                if (res.statusCode() != 200){
-                    goAhead = false;
-                } else {
-                    goAhead = true;
-                }
-
-                JSONArray trips = new JSONArray();
-                // TODO: 404 status code - Christine
-                JSONObject tripInfo;
-                for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
-                    tripInfo = new JSONObject();
-                    String[] fieldsStr = new String[]{"_id", "passenger", "timeElapsed"};
-                    String[] fieldsDoub = new String[]{"distance", "totalCost", "discount", "startTime", "endTime"};
-
-                    for (String key: fieldsStr){
-                        tripInfo.put(key, trip.get(key));
+        try {
+            JSONObject response = new JSONObject();
+            int status;
+            String driver = r.getRequestURI().toString().substring("/trip/driver/".length());
+            System.out.println(driver);
+            if (driver.length() > 0){
+                boolean goAhead;
+                try {
+                    HttpResponse<String> res = sendRequest("/user/" + driver, "GET", "");
+                    if (res.statusCode() != 200){
+                        goAhead = false;
+                    } else {
+                        goAhead = true;
                     }
-                    for (String key: fieldsDoub){
-                        if (trip.get(key) != null) {
-                            tripInfo.put(key, Double.parseDouble(trip.get(key).toString()));
+
+                    JSONArray trips = new JSONArray();
+                    // TODO: 404 status code - Christine
+                    JSONObject tripInfo;
+                    for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
+                        tripInfo = new JSONObject();
+                        String[] fieldsStr = new String[]{"_id", "passenger", "timeElapsed"};
+                        String[] fieldsDoub = new String[]{"distance", "totalCost", "discount", "startTime", "endTime"};
+
+                        for (String key: fieldsStr){
+                            tripInfo.put(key, trip.get(key));
                         }
+                        for (String key: fieldsDoub){
+                            if (trip.get(key) != null) {
+                                tripInfo.put(key, Double.parseDouble(trip.get(key).toString()));
+                            }
+                        }
+                        trips.put(tripInfo);
+
+
                     }
-                    trips.put(tripInfo);
-
-
+                    if (trips.length() == 0 && !goAhead){
+                        status = 404;
+                    } else {
+                        JSONObject data = new JSONObject();
+                        data.put("trips", trips);
+                        response.put("data", data);
+                        status = 200;
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                    status = 500;
                 }
-                if (trips.length() == 0 && !goAhead){
-                    status = 404;
-                } else {
-                    JSONObject data = new JSONObject();
-                    data.put("trips", trips);
-                    response.put("data", data);
-                    status = 200;
-                }
-            } catch (Exception e){
-                e.printStackTrace();
-                status = 500;
+            } else {
+                status = 400;
             }
-        } else {
-            status = 400;
+            sendResponse(r, response, status);
+        } catch (Exception e){
+            sendStatus(r, 500);
         }
-        sendResponse(r, response, status);
     }
 }

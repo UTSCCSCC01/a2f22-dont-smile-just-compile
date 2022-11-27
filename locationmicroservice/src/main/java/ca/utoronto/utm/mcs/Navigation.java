@@ -21,13 +21,13 @@ public class Navigation extends Endpoint {
 
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
-        String[] params = r.getRequestURI().toString().split("/");
-        if (params.length != 4 || params[3].isEmpty() || !params[3].matches("\\d+\\?passengerUid=\\d+")) {
-            this.sendStatus(r, 400);
-            return;
-        }
 
         try {
+            String[] params = r.getRequestURI().toString().split("/");
+            if (params.length != 4 || params[3].isEmpty() || !params[3].matches("\\d+\\?passengerUid=\\d+")) {
+                this.sendStatus(r, 400);
+                return;
+            }
             String[] driverPassenger = params[3].split("\\?passengerUid=");
             Result result = this.dao.getShortestRoute(driverPassenger[0], driverPassenger[1]);
 

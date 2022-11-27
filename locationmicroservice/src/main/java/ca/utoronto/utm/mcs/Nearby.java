@@ -19,13 +19,13 @@ public class Nearby extends Endpoint {
 
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
-        String[] params = r.getRequestURI().toString().split("/");
-        if (params.length != 4 || params[3].isEmpty() || !params[3].matches("\\d+\\?radius=\\d+")) {
-            this.sendStatus(r, 400);
-            return;
-        }
-
         try {
+            String[] params = r.getRequestURI().toString().split("/");
+            if (params.length != 4 || params[3].isEmpty() || !params[3].matches("\\d+\\?radius=\\d+")) {
+                this.sendStatus(r, 400);
+                return;
+            }
+
             String[] uidRadius = params[3].split("\\?radius=");
             if (this.dao.getUserByUid(uidRadius[0]).hasNext()) {
                 Result result = this.dao.getNearbyDrivers(uidRadius[0], Integer.parseInt(uidRadius[1]));
