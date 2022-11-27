@@ -233,6 +233,7 @@ public class AppTest {
         assertEquals("OK", response.get("status"));
         JSONObject data = (JSONObject) response.get("data");;
         assertEquals(2, data.length());
+        System.out.println(data);
         assertEquals(6, data.getInt("total_time"));
         JSONObject[] expected = {
                 new JSONObject()

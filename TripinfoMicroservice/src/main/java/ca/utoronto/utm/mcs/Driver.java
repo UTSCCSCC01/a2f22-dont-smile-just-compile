@@ -34,8 +34,7 @@ public class Driver extends Endpoint {
                     for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
                         tripInfo = new JSONObject();
                         String[] fieldsStr = new String[]{"_id", "passenger", "timeElapsed"};
-                        String[] fieldsDoub = new String[]{"distance", "totalCost", "discount", "startTime", "endTime"};
-
+                        String[] fieldsDoub = new String[]{ "distance", "driverPayout", "startTime", "endTime"};
                         for (String key: fieldsStr){
                             tripInfo.put(key, trip.get(key));
                         }

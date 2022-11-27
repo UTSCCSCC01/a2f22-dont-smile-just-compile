@@ -88,8 +88,10 @@ public abstract class Endpoint implements HttpHandler {
         for (int i = 0; i < fields.length; i++) {
             try {
                 if (!JSONRequest.has(fields[i]) || !JSONRequest.get(fields[i]).getClass().equals(fieldClasses[i])) {
-                    System.out.println(fields[i] + "failed validation, its class is " +  JSONRequest.get(fields[i]).getClass());
-                    return false;
+                    if (!(fieldClasses[i].equals(Double.class) && JSONRequest.get(fields[i]).getClass().equals(Integer.class))){
+                        System.out.println(fields[i] + "failed validation, its class is " +  JSONRequest.get(fields[i]).getClass());
+                        return false;
+                    }
                 }
             } catch (Exception e) {
                 return false;
