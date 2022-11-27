@@ -2,7 +2,13 @@
 
 All databases should be clear before running tests, and all services should be running in docker. 
 
-The tests for TripMicroservice require LocationMicroservice to be running in docker.
+The LocationMicroservice tests must be run before the TripMicroservice tests are run.
+
+tripRequestPass() requires getNearbyDriverPass() from the location app tests
+
+driverTimePass() requires getNavigationPass() from the location app tests
+
+The tests for TripMicroservice require LocationMicroservice and UserMicroservice to be running in docker.
 
 The endpoints for UserMicroservice assume that Login/Register do **NOT** return the uid
 
