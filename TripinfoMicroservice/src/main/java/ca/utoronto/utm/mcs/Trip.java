@@ -20,34 +20,20 @@ public class Trip extends Endpoint {
 
     @Override
     public void handlePatch(HttpExchange r) throws IOException, JSONException {
-        // TODO
         try {
-            System.out.println("Handling patch");
             JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
             JSONObject response = new JSONObject();
             int status;
 
-            /** test data
-             * {
-             *     "distance": 1002,
-             *     "endTime": 200000000,
-             *     "timeElapsed": 303,
-             *     "discount": 5.3,
-             *     "totalCost": 345.23,
-             *     "driverPayout": 0.0
-             * }
-             */
             String tripId = r.getRequestURI().toString().substring("/trip/".length());
-            boolean goAhead = true;
+            ObjectId tripObjectId;
             try {
-                ObjectId tripObjectId = new ObjectId(tripId);
-            } catch (Exception e){
-                status = 400;
-                goAhead = false;
+                tripObjectId = new ObjectId(tripId);
+            } catch (IllegalArgumentException e){
                 sendStatus(r, 400);
                 return;
             }
-            if (this.dao.getTripByFilter("_id", new ObjectId(tripId)) != null){
+            if (this.dao.getTripByFilter("_id", tripObjectId) != null){
                 String[] bodyParams = new String[]{"distance", "endTime", "timeElapsed", "discount",
                         "totalCost", "driverPayout"};
                 if (validateFields(requestBody, bodyParams, new Class[]{Integer.class, Integer.class, String.class,
@@ -56,12 +42,12 @@ public class Trip extends Endpoint {
                                 Double.class, Double.class, Double.class})
                 ){
                     try {
-                        Double distance = requestBody.getDouble("distance");
-                        Integer endTime = requestBody.getInt("endTime");
+                        double distance = requestBody.getDouble("distance");
+                        int endTime = requestBody.getInt("endTime");
                         String timeElapsed = requestBody.getString("timeElapsed");
-                        Double discount = requestBody.getDouble("discount");
-                        Double totalCost = requestBody.getDouble("totalCost");
-                        Double driverPayout = requestBody.getDouble("driverPayout");
+                        double discount = requestBody.getDouble("discount");
+                        double totalCost = requestBody.getDouble("totalCost");
+                        double driverPayout = requestBody.getDouble("driverPayout");
 
                         this.dao.patchTrip(tripId, distance, endTime, timeElapsed, discount, totalCost, driverPayout);
 

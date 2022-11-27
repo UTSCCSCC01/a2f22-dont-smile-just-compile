@@ -18,9 +18,8 @@ public class Confirm extends Endpoint {
 
     @Override
     public void handlePost(HttpExchange r) throws IOException, JSONException {
-        // TODO
-        int status;
         try {
+            int status;
             JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
             JSONObject response = new JSONObject();
             if (validateFields(requestBody, new String[]{"driver", "passenger", "startTime"},
@@ -31,7 +30,6 @@ public class Confirm extends Endpoint {
                 String newId;
                 if ((newId = this.dao.postTrip(driverUid, passengerUid, startTime)) != null){
                     status = 200;
-                    System.out.println(newId);
                     JSONObject data = new JSONObject();
                     data.put("_id", newId );
                     response.put("data", data);

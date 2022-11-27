@@ -6,24 +6,16 @@ package ca.utoronto.utm.mcs;
  * and/or recieve http requests from other microservices. Any other 
  * imports are fine.
  */
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.URI;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONException;
-import java.io.IOException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
-
-import org.json.JSONObject;
-import com.mongodb.client.FindIterable;
-import org.bson.Document;
 
 public class Request extends Endpoint {
 
@@ -38,7 +30,6 @@ public class Request extends Endpoint {
 
     @Override
     public void handlePost(HttpExchange r) throws IOException,JSONException{
-        // TODO
         try {
             JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
             JSONObject response = new JSONObject();
@@ -52,15 +43,15 @@ public class Request extends Endpoint {
                     JSONObject resBody = new JSONObject(res.body());
                     if (res.statusCode() == 200) {
                         JSONObject bodyData = resBody.getJSONObject("data");
-                        List<String> driverUids = new ArrayList<String>();
+                        List<String> drivers = new ArrayList<>();
                         Iterator<?> iterator = bodyData.keys();
                         while(iterator.hasNext()){
-                            driverUids.add(iterator.next().toString());
+                            drivers.add(iterator.next().toString());
                         }
-                        response.put("data", driverUids);
+                        response.put("data", drivers);
                         sendResponse(r, response, 200);
                     } else {
-                        sendStatus(r, res.statusCode()); // there would be where 404 is returned
+                        sendStatus(r, res.statusCode());
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
