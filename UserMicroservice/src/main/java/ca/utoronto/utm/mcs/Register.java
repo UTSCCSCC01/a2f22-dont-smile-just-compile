@@ -18,7 +18,6 @@ public class Register extends Endpoint {
 
     @Override
     public void handlePost(HttpExchange r) throws IOException, JSONException {
-        // TODO
         try {
             JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
             int status;
@@ -29,10 +28,9 @@ public class Register extends Endpoint {
                 String password = requestBody.getString("password");
 
                 try {
-                    Integer uid;
                     if (this.dao.registerUser(name, email, password)){
                         status = 200;
-                    } else { // if email already has an account
+                    } else {
                         status = 409;
                     }
 

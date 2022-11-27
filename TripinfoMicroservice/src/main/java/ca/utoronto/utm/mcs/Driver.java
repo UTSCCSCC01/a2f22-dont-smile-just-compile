@@ -20,24 +20,16 @@ public class Driver extends Endpoint {
 
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
-        // TODO
         try {
-            JSONObject response = new JSONObject();
             int status;
+            JSONObject response = new JSONObject();
             String driver = r.getRequestURI().toString().substring("/trip/driver/".length());
-            System.out.println(driver);
             if (driver.length() > 0){
-                boolean goAhead;
                 try {
                     HttpResponse<String> res = sendRequest("/user/" + driver, "GET", "");
-                    if (res.statusCode() != 200){
-                        goAhead = false;
-                    } else {
-                        goAhead = true;
-                    }
+                    boolean goAhead = res.statusCode() == 200;
 
                     JSONArray trips = new JSONArray();
-                    // TODO: 404 status code - Christine
                     JSONObject tripInfo;
                     for (Document trip : this.dao.getTripsByFilter("driver", driver)) {
                         tripInfo = new JSONObject();
@@ -52,8 +44,6 @@ public class Driver extends Endpoint {
                             }
                         }
                         trips.put(tripInfo);
-
-
                     }
                     if (trips.length() == 0 && !goAhead){
                         status = 404;
