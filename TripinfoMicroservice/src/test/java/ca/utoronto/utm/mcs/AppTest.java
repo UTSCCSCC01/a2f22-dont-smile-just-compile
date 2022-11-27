@@ -156,7 +156,7 @@ public class AppTest {
 
     @Test
     public void tripRequestFail() throws JSONException, IOException, InterruptedException {
-        String passengerUid = UUID.randomUUID().toString();
+        String passengerUid = String.valueOf(((int)(Math.random() * 100000000)));
         JSONObject reqBody = new JSONObject()
                 .put("uid", passengerUid)
                 .put("radius", 30);
