@@ -18,20 +18,20 @@ public class Route extends Endpoint {
     @Override
     public void handlePost(HttpExchange r) throws IOException, JSONException {
 
-        JSONObject body = new JSONObject(Utils.convert(r.getRequestBody()));
-        String fields[] = {"roadName1", "roadName2", "hasTraffic", "time"};
-        Class<?> fieldClasses[] = {String.class, String.class, Boolean.class, Integer.class};
-        if (!validateFields(body, fields, fieldClasses)) {
-            this.sendStatus(r, 400);
-            return;
-        }
-            
-        String road1 = body.getString("roadName1");
-        String road2 = body.getString("roadName2");
-        Boolean is_traffic = body.getBoolean("hasTraffic");
-        int time = body.getInt("time");
-
         try {
+            JSONObject body = new JSONObject(Utils.convert(r.getRequestBody()));
+            String fields[] = {"roadName1", "roadName2", "hasTraffic", "time"};
+            Class<?> fieldClasses[] = {String.class, String.class, Boolean.class, Integer.class};
+            if (!validateFields(body, fields, fieldClasses)) {
+                this.sendStatus(r, 400);
+                return;
+            }
+
+            String road1 = body.getString("roadName1");
+            String road2 = body.getString("roadName2");
+            Boolean is_traffic = body.getBoolean("hasTraffic");
+            int time = body.getInt("time");
+
             Result result = this.dao.createRoute(road1, road2, time, is_traffic);
             if (!result.hasNext()) {
                 this.sendStatus(r, 404);

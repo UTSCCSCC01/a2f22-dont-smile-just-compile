@@ -2,21 +2,16 @@ package ca.utoronto.utm.mcs;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Function;
-
-import org.json.JSONObject;
-import org.json.JSONException;
 
 public abstract class Endpoint implements HttpHandler {
 
@@ -93,8 +88,10 @@ public abstract class Endpoint implements HttpHandler {
         for (int i = 0; i < fields.length; i++) {
             try {
                 if (!JSONRequest.has(fields[i]) || !JSONRequest.get(fields[i]).getClass().equals(fieldClasses[i])) {
-                    System.out.println(fields[i] + "failed validation, its class is " +  JSONRequest.get(fields[i]).getClass());
-                    return false;
+                    if (!(fieldClasses[i].equals(Double.class) && JSONRequest.get(fields[i]).getClass().equals(Integer.class))){
+                        System.out.println(fields[i] + "failed validation, its class is " +  JSONRequest.get(fields[i]).getClass());
+                        return false;
+                    }
                 }
             } catch (Exception e) {
                 return false;

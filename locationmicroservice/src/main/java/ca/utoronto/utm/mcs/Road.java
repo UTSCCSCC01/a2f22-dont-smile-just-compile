@@ -19,17 +19,16 @@ public class Road extends Endpoint {
     @Override
     public void handlePut(HttpExchange r) throws IOException, JSONException {
 
-        JSONObject body = new JSONObject(Utils.convert(r.getRequestBody()));
-        String fields[] = {"roadName", "hasTraffic"};
-        Class<?> fieldClasses[] = {String.class, Boolean.class}; 
-        if (!validateFields(body, fields, fieldClasses)) {
-            this.sendStatus(r, 400);
-        }
-
-        String roadName = body.getString("roadName");
-        boolean hasTraffic = body.getBoolean("hasTraffic");
-
         try {
+            JSONObject body = new JSONObject(Utils.convert(r.getRequestBody()));
+            String fields[] = {"roadName", "hasTraffic"};
+            Class<?> fieldClasses[] = {String.class, Boolean.class};
+            if (!validateFields(body, fields, fieldClasses)) {
+                this.sendStatus(r, 400);
+            }
+
+            String roadName = body.getString("roadName");
+            boolean hasTraffic = body.getBoolean("hasTraffic");
             Result getRoad = this.dao.getRoad(roadName);
             if (getRoad.hasNext()) {
                 // Road found, update the info

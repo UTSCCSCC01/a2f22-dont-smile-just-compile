@@ -51,6 +51,7 @@ public class RequestRouter implements HttpHandler {
 							r.sendResponseHeaders(statusCode, serviceResponse.length());
 							responseBody.write(serviceResponse.getBytes());
 							responseBody.close();
+							System.out.println("Called " + url + " and returned " + serviceResponse);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

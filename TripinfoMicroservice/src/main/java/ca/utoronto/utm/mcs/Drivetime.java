@@ -6,10 +6,6 @@ package ca.utoronto.utm.mcs;
  * and/or recieve http requests from other microservices. Any other 
  * imports are fine.
  */
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.URI;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.bson.Document;
@@ -17,8 +13,8 @@ import org.bson.types.ObjectId;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.print.Doc;
 import java.io.IOException;
+import java.net.http.HttpResponse;
 
 public class Drivetime extends Endpoint {
 
@@ -33,25 +29,22 @@ public class Drivetime extends Endpoint {
 
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
-        // TODO
         String[] params = r.getRequestURI().toString().split("/");
         if (params.length != 4 || params[3].isEmpty()) {
             this.sendStatus(r, 400);
             return;
         }
-
+        String tripId = params[3];
+        ObjectId tripObjectId;
         try {
-            System.out.println(r.getRequestURI());
-            String tripId = params[3];
-            Document tripInfo;
-            try {
-                tripInfo = this.dao.getTripByFilter("_id", new ObjectId(tripId));
-            } catch(IllegalArgumentException e) {
-                e.printStackTrace();
-                this.sendStatus(r, 404);
-                return;
-            }
-
+            tripObjectId = new ObjectId(tripId);
+        } catch (IllegalArgumentException e){
+            e.printStackTrace();
+            sendStatus(r, 400);
+            return;
+        }
+        try {
+            Document tripInfo = this.dao.getTripByFilter("_id", tripObjectId);
             if (tripInfo != null) {
                 String driverUid = tripInfo.getString("driver");
                 String passengerUid = tripInfo.getString("passenger");
@@ -72,8 +65,7 @@ public class Drivetime extends Endpoint {
                     sendStatus(r, res.statusCode());
                 }
             } else {
-                System.out.println("bad id " + tripId);
-                sendStatus(r, 400);
+                sendStatus(r, 404);
             }
         } catch (Exception e) {
             e.printStackTrace();

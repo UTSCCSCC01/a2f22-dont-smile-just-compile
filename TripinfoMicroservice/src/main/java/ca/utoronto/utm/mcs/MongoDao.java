@@ -1,20 +1,10 @@
 package ca.utoronto.utm.mcs;
 
-import com.mongodb.client.MongoCollection;
-import org.bson.BsonDocument;
-import org.bson.Document;
-
-import io.github.cdimascio.dotenv.Dotenv;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.FindIterable;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
-
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.conversions.Bson;
+import io.github.cdimascio.dotenv.Dotenv;
+import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.json.JSONObject;
 
 public class MongoDao {
 	
@@ -52,10 +42,9 @@ public class MongoDao {
 		doc.put("startTime", startTime);
 		try {
 			this.collection.insertOne(doc);
-			System.out.println(doc.get("_id"));
 			return doc.get("_id").toString();
 		} catch (Exception e) {
-			System.out.println("Error occurred");
+			e.printStackTrace();
 		}
 		return null;
 	}
