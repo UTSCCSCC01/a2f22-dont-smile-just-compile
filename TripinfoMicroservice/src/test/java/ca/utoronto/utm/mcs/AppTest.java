@@ -1,14 +1,9 @@
 package ca.utoronto.utm.mcs;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.mongodb.util.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,9 +11,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.UUID;
-import org.json.JSONObject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Please write your tests in this class. 
@@ -29,17 +24,6 @@ public class AppTest {
     private static final String API_URL = "http://localhost:8004";
 
     private static HttpResponse<String> sendRequest(String endpoint, String method, String reqBody) throws IOException, InterruptedException {
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL + endpoint))
-                .method(method, HttpRequest.BodyPublishers.ofString(reqBody))
-                .build();
-
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-
-    private static HttpResponse<String> sendRequestAsync(String endpoint, String method, String reqBody) throws IOException, InterruptedException {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -124,165 +108,21 @@ public class AppTest {
         return new JSONArray(trips);
     }
 
-    public void addUser(JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequest("/location/user", "PUT", reqBody.toString());
-        assertEquals(200, confirmRes.statusCode());
-        JSONObject response = new JSONObject(confirmRes.body());
-        assertEquals("OK", response.get("status"));
-    }
-
-    public void updateUserLocation(String uid, JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequest("/location/" + uid, "PATCH", reqBody.toString());
-        assertEquals(200, confirmRes.statusCode());
-        JSONObject response = new JSONObject(confirmRes.body());
-        assertEquals("OK", response.get("status"));
-    }
-
-    public void compareJson(JSONObject expected, JSONObject actual) throws JSONException {
-        Iterator<?> iterator = expected.keys();
-        while (iterator.hasNext()) {
-            Object key = iterator.next();
-            assertTrue(actual.has(key.toString()));
-            assertEquals(expected.get(key.toString()), actual.get(key.toString()));
-        }
-    }
-
-    public void compareJson(JSONArray expected, JSONArray actual) throws JSONException {
-        assertEquals(expected.length(), actual.length());
-        ArrayList<String> expectedValues = new ArrayList<>();
-        for (int i = 0; i < expected.length() ; i++) {
-            expectedValues.add(expected.get(i).toString());
-        }
-        for (int i = 0; i < actual.length(); i++) {
-            assertTrue(expectedValues.contains(actual.get(i).toString()));
-        }
-    }
-
-    public String setupTripRequest(String driverUid, String passengerUid) throws JSONException, IOException, InterruptedException {
-        JSONObject driver = new JSONObject()
-                .put("uid", driverUid)
-                .put("is_driver", true);
-        JSONObject passenger = new JSONObject()
-                .put("uid", passengerUid)
-                .put("is_driver", false);
-        addUser(driver);
-        addUser(passenger);
-        double locX = 0.5;
-        double locY = 0.5;
-        JSONObject loc1 = new JSONObject()
-                .put("longitude", locX)
-                .put("latitude", locY)
-                .put("street", "cool street");
-        JSONObject loc2 = new JSONObject()
-                .put("longitude", locX + 1)
-                .put("latitude", locY + 20)
-                .put("street", "not so cool street");
-        updateUserLocation(driverUid, loc1);
-        updateUserLocation(passengerUid, loc2);
-
-        JSONObject reqBody = new JSONObject()
-                .put("uid", passengerUid)
-                .put("radius", 30);
-        return reqBody.toString();
-    }
-
-    public void addRoad(JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequest("/location/road", "PUT", reqBody.toString());
-        assertEquals(200, confirmRes.statusCode());
-        JSONObject response = new JSONObject(confirmRes.body());
-        assertEquals("OK", response.get("status"));
-    }
-
-    public void hasRoute(JSONObject reqBody) throws IOException, InterruptedException, JSONException {
-        HttpResponse<String> confirmRes = sendRequest("/location/hasRoute", "POST", reqBody.toString());
-        assertEquals(200, confirmRes.statusCode());
-        JSONObject response = new JSONObject(confirmRes.body());
-        assertEquals("OK", response.get("status"));
-    }
-
-    public void setupDrivetime(String driverUid, String passengerUid) throws JSONException, IOException, InterruptedException {
-        JSONObject driver = new JSONObject()
-                .put("uid", driverUid)
-                .put("is_driver", true);
-        JSONObject passenger = new JSONObject()
-                .put("uid", passengerUid)
-                .put("is_driver", false);
-        addUser(driver);
-        addUser(passenger);
-        JSONObject road1 = new JSONObject()
-                .put("roadName", "road1")
-                .put("hasTraffic", true);
-        JSONObject road2 = new JSONObject()
-                .put("roadName", "road2")
-                .put("hasTraffic", true);
-        JSONObject road3 = new JSONObject()
-                .put("roadName", "road3")
-                .put("hasTraffic", false);
-        JSONObject road4 = new JSONObject()
-                .put("roadName", "road4")
-                .put("hasTraffic", true);
-        JSONObject toad = new JSONObject()
-                .put("roadName", "toad")
-                .put("hasTraffic", false);
-        addRoad(road1);
-        addRoad(road2);
-        addRoad(road3);
-        addRoad(road4);
-        addRoad(toad);
-        JSONObject route1 = new JSONObject()
-                .put("roadName1", "road1")
-                .put("roadName2", "road2")
-                .put("hasTraffic", true)
-                .put("time", 1);
-        JSONObject route2 = new JSONObject()
-                .put("roadName1", "road2")
-                .put("roadName2", "road3")
-                .put("hasTraffic", false)
-                .put("time", 2);
-        JSONObject route3 = new JSONObject()
-                .put("roadName1", "road3")
-                .put("roadName2", "road4")
-                .put("hasTraffic", false)
-                .put("time", 3);
-        JSONObject route4 = new JSONObject()
-                .put("roadName1", "road1")
-                .put("roadName2", "toad")
-                .put("hasTraffic", true)
-                .put("time", 4);
-        JSONObject route5 = new JSONObject()
-                .put("roadName1", "toad")
-                .put("roadName2", "road4")
-                .put("hasTraffic", false)
-                .put("time", 5);
-        hasRoute(route1);
-        hasRoute(route2);
-        hasRoute(route3);
-        hasRoute(route4);
-        hasRoute(route5);
-        JSONObject loc1 = new JSONObject()
-                .put("longitude",0.5)
-                .put("latitude", 0.5)
-                .put("street", "road1");
-        JSONObject loc2 = new JSONObject()
-                .put("longitude", 1.5)
-                .put("latitude", 0.5)
-                .put("street", "road4");
-        updateUserLocation(driverUid, loc1);
-        updateUserLocation(passengerUid, loc2);
-    }
-
     @Test
     public void tripRequestPass() throws JSONException, IOException, InterruptedException {
-        String uid1 = UUID.randomUUID().toString();
-        String uid2 = UUID.randomUUID().toString();
-        String reqBody = setupTripRequest(uid1, uid2);
-        HttpResponse<String> confirmRes = sendRequest("/trip/request/", "POST", reqBody);
+        // This test requires getNearbyDriverPass() from the location app tests
+        String driverUid = "1";
+        String passengerUid = "2";
+        JSONObject reqBody = new JSONObject()
+                .put("uid", passengerUid)
+                .put("radius", 1);
+        HttpResponse<String> confirmRes = sendRequest("/trip/request/", "POST", reqBody.toString());
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));
         JSONArray data = response.getJSONArray("data");
         assertEquals(1, data.length());
-        assertEquals(uid1, data.getString(0));
+        assertEquals(driverUid, data.getString(0));
     }
 
     @Test
@@ -302,10 +142,6 @@ public class AppTest {
         assertEquals(400, confirmRes.statusCode());
         response = new JSONObject(confirmRes.body());
         assertEquals("BAD REQUEST", response.get("status"));
-        JSONObject passenger = new JSONObject()
-                .put("uid", passengerUid)
-                .put("is_driver", false);
-        addUser(passenger);
         reqBody = new JSONObject()
                 .put("uid", passengerUid)
                 .put("radius", -20);
@@ -422,9 +258,9 @@ public class AppTest {
 
     @Test
     public void driverTimePass() throws JSONException, IOException, InterruptedException {
-        String driverUid = UUID.randomUUID().toString();
-        String passengerUid = UUID.randomUUID().toString();
-        setupDrivetime(driverUid, passengerUid);
+        // This test requires getNavigationPass() from the location app tests
+        String driverUid = "5";
+        String passengerUid = "6";
         JSONObject requestBody = new JSONObject()
                 .put("driver", driverUid)
                 .put("passenger", passengerUid)
