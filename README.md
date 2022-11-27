@@ -4,7 +4,9 @@ All databases should be clear before running tests, and all services should be r
 
 The tests for TripMicroservice require LocationMicroservice to be running in docker.
 
-The endpoints for UserMicroservice assume that Login/Register do **NOT** return the created \_id
+The endpoints for UserMicroservice assume that Login/Register do **NOT** return the uid
+
+/trip/confirm returns the _id as a field inside the "data" object of the response body. (Ex: { "data": {"_id" : "1"}, "status": "OK" } )
 
 ## We assumed that when passed in the request body:
 
