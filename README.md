@@ -16,6 +16,6 @@ startTime, endTime are **integers**
 
 All other pay and discount parameters are **doubles**
 
-trip \_id is a **VALID** ObjectID hexidecimal.
+trip \_id is a **VALID** ObjectID hexidecimal. Otherwise it will return an error status code.
 
 
