@@ -39,19 +39,17 @@ public class Drivetime extends Endpoint {
             this.sendStatus(r, 400);
             return;
         }
-
+        System.out.println(r.getRequestURI());
+        String tripId = params[3];
+        Document tripInfo;
         try {
-            System.out.println(r.getRequestURI());
-            String tripId = params[3];
-            Document tripInfo;
-            try {
-                tripInfo = this.dao.getTripByFilter("_id", new ObjectId(tripId));
-            } catch(IllegalArgumentException e) {
-                e.printStackTrace();
-                this.sendStatus(r, 404);
-                return;
-            }
-
+            tripInfo = this.dao.getTripByFilter("_id", new ObjectId(tripId));
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
+            this.sendStatus(r, 404);
+            return;
+        }
+        try {
             if (tripInfo != null) {
                 String driverUid = tripInfo.getString("driver");
                 String passengerUid = tripInfo.getString("passenger");

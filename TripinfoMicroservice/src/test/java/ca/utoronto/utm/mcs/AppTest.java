@@ -42,7 +42,8 @@ public class AppTest {
         HttpResponse<String> response = sendRequest("/trip/confirm", "POST", requestBody.toString());
         JSONObject responseObject = new JSONObject(response.body());
         System.out.println(responseObject);
-        return responseObject.getString("data");
+        String tripId = responseObject.getJSONObject("data").getString("_id");
+        return tripId;
     }
 
     public JSONArray setupTripsForPassenger(String passenger) throws JSONException, IOException, InterruptedException {
@@ -56,7 +57,7 @@ public class AppTest {
         requestBody.put("startTime", 100);
         listItem.put("startTime", 100);
         HttpResponse<String> res = sendRequest("/trip/confirm", "POST", requestBody.toString());
-        listItem.put("_id", new JSONObject(res.body()).get("data"));
+        listItem.put("_id", new JSONObject(res.body()).getJSONObject("data").getString("_id"));
 
         trips.add(listItem);
 
@@ -69,7 +70,7 @@ public class AppTest {
         listItem.put("startTime", 200);
 
         res = sendRequest("/trip/confirm", "POST", requestBody.toString());
-        listItem.put("_id", new JSONObject(res.body()).get("data"));
+        listItem.put("_id", new JSONObject(res.body()).getJSONObject("data").getString("_id"));
 
         trips.add(listItem);
 
@@ -87,7 +88,7 @@ public class AppTest {
         requestBody.put("startTime", 100);
         listItem.put("startTime", 100);
         HttpResponse<String> res = sendRequest("/trip/confirm", "POST", requestBody.toString());
-        listItem.put("_id", new JSONObject(res.body()).get("data"));
+        listItem.put("_id", new JSONObject(res.body()).getJSONObject("data").getString("_id"));
 
         trips.add(listItem);
 
@@ -100,7 +101,7 @@ public class AppTest {
         listItem.put("startTime", 200);
 
         res = sendRequest("/trip/confirm", "POST", requestBody.toString());
-        listItem.put("_id", new JSONObject(res.body()).get("data"));
+        listItem.put("_id", new JSONObject(res.body()).getJSONObject("data").getString("_id"));
 
         trips.add(listItem);
 
@@ -266,8 +267,8 @@ public class AppTest {
                 .put("startTime", 0);
         HttpResponse<String> tripResponse = sendRequest("/trip/confirm", "POST", requestBody.toString());
         assertEquals( 200, tripResponse.statusCode());
-        JSONObject trip = new JSONObject(tripResponse.body());
-        HttpResponse<String> confirmRes = sendRequest("/trip/driverTime/" + trip.getString("data"), "GET", "");
+        JSONObject trip = new JSONObject(tripResponse.body()).getJSONObject("data");
+        HttpResponse<String> confirmRes = sendRequest("/trip/driverTime/" + trip.getString("_id"), "GET", "");
         assertEquals(200, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
         assertEquals("OK", response.get("status"));

@@ -18,19 +18,18 @@ public class User extends Endpoint {
 
     @Override
     public void handlePut(HttpExchange r) throws IOException, JSONException {
-        
-        JSONObject body = new JSONObject(Utils.convert(r.getRequestBody()));
-        String fields[] = {"uid", "is_driver"};
-        Class<?> fieldClasses[] = {String.class, Boolean.class};
-        if (!validateFields(body, fields, fieldClasses)) {
-            this.sendStatus(r, 400);
-            return;
-        }
-
-        String uid = body.getString("uid");
-        boolean is_driver = body.getBoolean("is_driver");
 
         try {
+            JSONObject body = new JSONObject(Utils.convert(r.getRequestBody()));
+            String fields[] = {"uid", "is_driver"};
+            Class<?> fieldClasses[] = {String.class, Boolean.class};
+            if (!validateFields(body, fields, fieldClasses)) {
+                this.sendStatus(r, 400);
+                return;
+            }
+
+            String uid = body.getString("uid");
+            boolean is_driver = body.getBoolean("is_driver");
             Result userCheck = this.dao.getUserByUid(uid);
             if (userCheck.hasNext()) {
                 Result updateRes = this.dao.updateUserIsDriver(uid, is_driver);

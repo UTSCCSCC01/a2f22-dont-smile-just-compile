@@ -17,14 +17,13 @@ public class Location extends Endpoint {
 
     @Override
     public void handleGet(HttpExchange r) throws IOException, JSONException {
-        
-        String[] params = r.getRequestURI().toString().split("/");
-        if (params.length != 3 || params[2].isEmpty()) {
-            this.sendStatus(r, 400);
-            return;
-        }
 
         try {
+            String[] params = r.getRequestURI().toString().split("/");
+            if (params.length != 3 || params[2].isEmpty()) {
+                this.sendStatus(r, 400);
+                return;
+            }
             String uid = params[2];
             Result result = this.dao.getUserLocationByUid(uid);
             if (result.hasNext()) {
