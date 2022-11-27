@@ -259,14 +259,9 @@ public class AppTest {
 
     @Test
     public void tripsForDriverPass() throws JSONException, IOException, InterruptedException {
-<<<<<<< HEAD
-        String driverId = String.valueOf((int)(Math.floor(Math.random() * 10000000)));
-=======
         createDriverAndPassenger();
 
         String driverId = "2";
-        // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
->>>>>>> ef509d47fe2efb400ca91e5955a6af96febb10a0
         JSONArray trips = setupTripsForDriver(driverId);
 
         HttpResponse<String> response = sendRequest("/trip/driver/" + driverId, "GET", "");

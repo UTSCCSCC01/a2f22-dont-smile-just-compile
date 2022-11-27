@@ -29,13 +29,6 @@ public class Confirm extends Endpoint {
                 String passengerUid = requestBody.getString("passenger");
                 String startTime = requestBody.getString("startTime");
                 String newId;
-<<<<<<< HEAD
-                if ((newId = this.dao.postTrip(driverUid, passengerUid, startTime)) != null){
-                    status = 200;
-                    JSONObject data = new JSONObject();
-                    data.put("_id", newId );
-                    response.put("data", data);
-=======
                 HttpResponse<String> userInfo = sendRequest("/user/" + driverUid, "GET", "");
                 if (new JSONObject(userInfo.body()).getJSONObject("data").getBoolean("isDriver")){
                     userInfo = sendRequest("/user/" + passengerUid, "GET", "");
@@ -52,7 +45,6 @@ public class Confirm extends Endpoint {
                     } else {
                         status = 400;
                     }
->>>>>>> ef509d47fe2efb400ca91e5955a6af96febb10a0
                 } else {
                     status = 400;
                 }
