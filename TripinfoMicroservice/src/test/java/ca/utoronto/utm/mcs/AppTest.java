@@ -56,10 +56,17 @@ public class AppTest {
         requestBody.put("password", "password");
         sendRequest("/user/register", "POST", requestBody.toString());
         requestBody = new JSONObject();
+        requestBody.put("name", "gdfg");
+        requestBody.put("email", (int)(Math.random() * 10000) + "sdfafddsdfasfsasdf@gmail.com");
+        requestBody.put("password", "password");
+        sendRequest("/user/register", "POST", requestBody.toString());
+        requestBody = new JSONObject();
         // make sure there exists a driver
         requestBody.put("isDriver", true);
         sendRequest("/user/1", "PATCH", requestBody.toString());
         sendRequest("/user/2", "PATCH", requestBody.toString());
+        sendRequest("/user/3", "PATCH", requestBody.toString());
+        sendRequest("/user/4", "PATCH", requestBody.toString());
 
     }
 
@@ -281,8 +288,9 @@ public class AppTest {
     @Test
     public void driverTimePass() throws JSONException, IOException, InterruptedException {
         // This test requires getNavigationPass() from the location app tests
-        String driverUid = "5";
-        String passengerUid = "6";
+        createDriverAndPassenger();
+        String driverUid = "3";
+        String passengerUid = "4";
         JSONObject requestBody = new JSONObject()
                 .put("driver", driverUid)
                 .put("passenger", passengerUid)

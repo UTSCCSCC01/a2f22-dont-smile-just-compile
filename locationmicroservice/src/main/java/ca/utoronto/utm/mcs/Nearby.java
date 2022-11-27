@@ -42,10 +42,12 @@ public class Nearby extends Endpoint {
 
                     res.put("data", data);
                     this.sendResponse(r, res, 200);
-                    return;
+                } else {
+                    this.sendStatus(r, 404);
                 }
+            } else {
+                this.sendStatus(r, 404);
             }
-            this.sendStatus(r, 404);
         } catch (Exception e) {
             e.printStackTrace();
             this.sendStatus(r, 500);

@@ -113,8 +113,8 @@ public class AppTest {
 
     @Test
     public void getNearbyDriverFail() throws JSONException, IOException, InterruptedException {
-        String uid1 = "3";
-        String uid2 = "4";
+        String uid1 = "5";
+        String uid2 = "6";
         HttpResponse<String> confirmRes = sendRequest("/location/nearbyDriver/" + uid1 + "?radius=1", "GET", "");
         assertEquals(404, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
@@ -157,8 +157,8 @@ public class AppTest {
 
     @Test
     public void getNavigationPass() throws JSONException, IOException, InterruptedException {
-        String driverUid = "5";
-        String passengerUid = "6";
+        String driverUid = "3";
+        String passengerUid = "4";
         JSONObject driver = new JSONObject()
                 .put("uid", driverUid)
                 .put("is_driver", true);
@@ -233,6 +233,7 @@ public class AppTest {
         assertEquals("OK", response.get("status"));
         JSONObject data = (JSONObject) response.get("data");;
         assertEquals(2, data.length());
+        System.out.println(data);
         assertEquals(6, data.getInt("total_time"));
         JSONObject[] expected = {
                 new JSONObject()

@@ -29,14 +29,34 @@ public class Navigation extends Endpoint {
                 return;
             }
             String[] driverPassenger = params[3].split("\\?passengerUid=");
-            Result result = this.dao.getShortestRoute(driverPassenger[0], driverPassenger[1]);
+            Result driver = this.dao.getUserLocationByUid(driverPassenger[0]);
+            Result passenger = this.dao.getUserLocationByUid(driverPassenger[1]);
+            if (driver.hasNext() && passenger.hasNext()) {
+                String driverStreet = driver.next().get("n.street").asString();
+                String passengerStreet = passenger.next().get("n.street").asString();
+                if (driverStreet == null || passengerStreet == null) {
+                    this.sendStatus(r, 400);
+                } else if (driverStreet.equals(passengerStreet)) {
+                    System.out.println(driverStreet + " is the same as " + passengerStreet);
+                    JSONObject res = new JSONObject();
+                    JSONObject data = new JSONObject()
+                            .put("total_time", 0)
+                            .put("route", new JSONArray());
+                    res.put("data", data);
+                    this.sendResponse(r, res, 200);
+                } else {
+                    Result result = this.dao.getShortestRoute(driverPassenger[0], driverPassenger[1]);
 
-            if (result.hasNext()) {
-                JSONObject res = new JSONObject();
-                Record user = result.next();
-                Map<String, Object> data = user.get("data").asMap();
-                res.put("data", data);
-                this.sendResponse(r, res, 200);
+                    if (result.hasNext()) {
+                        JSONObject res = new JSONObject();
+                        Record user = result.next();
+                        Map<String, Object> data = user.get("data").asMap();
+                        res.put("data", data);
+                        this.sendResponse(r, res, 200);
+                    } else {
+                        this.sendStatus(r, 404);
+                    }
+                }
             } else {
                 this.sendStatus(r, 404);
             }
