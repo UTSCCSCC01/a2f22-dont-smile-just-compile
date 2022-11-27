@@ -5,8 +5,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Login extends Endpoint {
 
@@ -20,7 +18,6 @@ public class Login extends Endpoint {
     
     @Override
     public void handlePost(HttpExchange r) throws IOException, JSONException {
-        // TODO
         try {
             JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
             JSONObject response = new JSONObject();
@@ -31,12 +28,11 @@ public class Login extends Endpoint {
                 String email = requestBody.getString("email");
                 String password = requestBody.getString("password");
 
-                // TODO: 401 status code??? - Christine
                 if (!this.dao.matchUser(email, null,null,null,null).next()){
                     status = 404;
                 } else if ((this.dao.loginUser(email, password)).next()){
                     status = 200;
-                } else { // email exists, but password doesnt match
+                } else {
                     status = 401;
                 }
 

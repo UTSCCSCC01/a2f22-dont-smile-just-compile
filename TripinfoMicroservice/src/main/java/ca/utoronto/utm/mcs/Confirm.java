@@ -19,9 +19,8 @@ public class Confirm extends Endpoint {
 
     @Override
     public void handlePost(HttpExchange r) throws IOException, JSONException {
-        // TODO
-        int status;
         try {
+            int status;
             JSONObject requestBody = new JSONObject(Utils.convert(r.getRequestBody()));
             JSONObject response = new JSONObject();
             if (validateFields(requestBody, new String[]{"driver", "passenger", "startTime"},

@@ -1,5 +1,6 @@
 package ca.utoronto.utm.mcs;
 
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +12,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -70,9 +70,7 @@ public class AppTest {
         requestBody.put("startTime", 100);
         HttpResponse<String> response = sendRequest("/trip/confirm", "POST", requestBody.toString());
         JSONObject responseObject = new JSONObject(response.body());
-        System.out.println(responseObject);
-        String tripId = responseObject.getJSONObject("data").getString("_id");
-        return tripId;
+        return responseObject.getJSONObject("data").getString("_id");
     }
 
     public JSONArray setupTripsForPassenger(String passenger) throws JSONException, IOException, InterruptedException {
@@ -156,7 +154,7 @@ public class AppTest {
 
     @Test
     public void tripRequestFail() throws JSONException, IOException, InterruptedException {
-        String passengerUid = UUID.randomUUID().toString();
+        String passengerUid = (int)(Math.floor(Math.random() * 10000000)) + "";
         JSONObject reqBody = new JSONObject()
                 .put("uid", passengerUid)
                 .put("radius", 30);
@@ -249,17 +247,12 @@ public class AppTest {
         JSONObject responseBody = new JSONObject(response.body());
 
         assertEquals( trips.toString(), responseBody.getJSONObject("data").getJSONArray("trips").toString());
-        System.out.println(trips);
-        System.out.println(responseBody);
         assertEquals(200, response.statusCode());
     }
 
     @Test
-    public void tripsForPassengerFail() throws JSONException, IOException, InterruptedException {
+    public void tripsForPassengerFail() throws IOException, InterruptedException {
         String passengerId = (int)(Math.floor(Math.random() * 10000000)) + "";
-        // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
-
-
         HttpResponse<String> response = sendRequest("/trip/passenger/" + passengerId, "GET", "");
         assertEquals( 404, response.statusCode());
     }
@@ -269,27 +262,18 @@ public class AppTest {
         createDriverAndPassenger();
 
         String driverId = "2";
-        // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
         JSONArray trips = setupTripsForDriver(driverId);
 
         HttpResponse<String> response = sendRequest("/trip/driver/" + driverId, "GET", "");
         JSONObject responseBody = new JSONObject(response.body());
 
-        //
-        // compareJson(trips.getJSONObject(0), responseBody.get("data").getJSONArray("trips").getJSONObject(0));
-        System.out.println(responseBody);
         assertEquals(trips.toString(),responseBody.getJSONObject("data").getJSONArray("trips").toString());
-        System.out.println(trips);
-        System.out.println(responseBody);
         assertEquals( 200, response.statusCode());
     }
 
     @Test
-    public void tripsForDriverFail() throws JSONException, IOException, InterruptedException {
+    public void tripsForDriverFail() throws IOException, InterruptedException {
         String driverId = (int)(Math.floor(Math.random() * 10000000)) + "";
-        // TODO: does it matter if the uid for a trip endpoint isn't number? - Christine
-
-
         HttpResponse<String> response = sendRequest("/trip/driver/" + driverId, "GET", "");
         assertEquals( 404, response.statusCode());
     }
@@ -316,10 +300,15 @@ public class AppTest {
 
     @Test
     public void driverTimeFail() throws IOException, InterruptedException, JSONException {
-        String tripId = UUID.randomUUID().toString();
-        HttpResponse<String> confirmRes = sendRequest("/trip/driverTime/" + tripId, "GET", "");
-        assertEquals(404, confirmRes.statusCode());
+        String invalidId = "-123";
+        String missingId = new ObjectId().toString();
+        HttpResponse<String> confirmRes = sendRequest("/trip/driverTime/" + invalidId, "GET", "");
+        assertEquals(400, confirmRes.statusCode());
         JSONObject response = new JSONObject(confirmRes.body());
+        assertEquals("BAD REQUEST", response.get("status"));
+        confirmRes = sendRequest("/trip/driverTime/" + missingId, "GET", "");
+        assertEquals(404, confirmRes.statusCode());
+        response = new JSONObject(confirmRes.body());
         assertEquals("NOT FOUND", response.get("status"));
     }
 }
