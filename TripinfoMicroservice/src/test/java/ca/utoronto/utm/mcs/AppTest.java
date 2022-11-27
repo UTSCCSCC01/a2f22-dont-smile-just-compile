@@ -186,8 +186,8 @@ public class AppTest {
         requestBody.put("distance", 234.4);
         requestBody.put("endTime", 234);
         requestBody.put("timeElapsed", "4:453");
-        requestBody.put("discount", 234.2);
-        requestBody.put("totalCost", 234.4);
+        requestBody.put("discount", 234);
+        requestBody.put("totalCost", 234);
         requestBody.put("driverPayout", 234.5);
 
         HttpResponse<String> response = sendRequest("/trip/" + tripId, "PATCH", requestBody.toString());
@@ -197,8 +197,12 @@ public class AppTest {
     @Test
     public void patchTripFail() throws JSONException, IOException, InterruptedException {
         JSONObject requestBody = new JSONObject();
-        requestBody.put("driver", "121");
-        requestBody.put("distance", 234);
+        requestBody.put("distance", 234.4);
+        requestBody.put("endTime", "time is a string");
+        requestBody.put("timeElapsed", "4:453");
+        requestBody.put("discount", 234);
+        requestBody.put("totalCost", 234);
+        requestBody.put("driverPayout", 234.5);
         HttpResponse<String> response = sendRequest("/trip/ihopethisdriveridisnottaken", "PATCH", requestBody.toString());
         assertEquals(400, response.statusCode());
     }
